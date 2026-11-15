@@ -18,7 +18,6 @@ export default async function AdminCourses() {
             <Link key={c.id} href={`/admin/courses/${c.id}`} className={`flex min-h-48 flex-col rounded-2xl p-6 transition hover:-translate-y-0.5 ${th.card}`}>
               <span className={`chip mb-3 w-fit ${c.is_published ? 'bg-white text-ink' : 'bg-ink/10'}`}>{c.is_published ? 'Опубликован' : 'Черновик'}</span>
               <div className="text-lg font-bold leading-snug">{c.title_ru}</div>
-              {c.title_kk && <div className={`mt-1 text-sm ${th.sub}`}>{c.title_kk}</div>}
               <div className={`mt-auto pt-6 text-xs font-semibold ${th.sub}`}>
                 {c.lessons?.[0]?.count ?? 0} уроков · {c.enrollments?.[0]?.count ?? 0} студентов с доступом
               </div>

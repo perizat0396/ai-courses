@@ -6,6 +6,7 @@ import {
   addLesson, addModule, deleteCourse, deleteModule, moveLesson, moveModule, updateCourse, updateModule,
 } from '../../actions';
 import { ConfirmButton } from '@/components/admin/Confirm';
+import { Bilingual } from '@/components/admin/Bilingual';
 import { IconArrowL, IconDown, IconEdit, IconTrash, IconUp } from '@/components/Icons';
 
 export default async function AdminCourse({ params }: { params: Promise<{ id: string }> }) {
@@ -29,8 +30,9 @@ export default async function AdminCourse({ params }: { params: Promise<{ id: st
       <form action={updateCourse.bind(null, id)} className="card grid gap-4 p-6 md:grid-cols-2">
         <div><label className="label">Название (рус.)</label><input name="title_ru" defaultValue={course.title_ru} required className="input" /></div>
         <div><label className="label">Атауы (қаз.)</label><input name="title_kk" defaultValue={course.title_kk} className="input" /></div>
-        <div><label className="label">Описание (рус.)</label><textarea name="description_ru" defaultValue={course.description_ru} rows={4} className="input" /></div>
-        <div><label className="label">Сипаттамасы (қаз.)</label><textarea name="description_kk" defaultValue={course.description_kk} rows={4} className="input" /></div>
+        <div className="md:col-span-2">
+          <Bilingual name="description" label="Описание курса" ru={course.description_ru} kk={course.description_kk} rows={4} />
+        </div>
         <div className="flex flex-wrap items-center gap-6 md:col-span-2">
           <div>
             <span className="label">Цвет карточки</span>

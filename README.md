@@ -18,7 +18,9 @@ Next.js 15 + Supabase (база, вход, хранилище файлов). И�
 3. Ещё один запрос: файл `supabase/seed.sql` → **Run**. Появятся 2 курса со структурой уроков (черновики).
 4. И третий: файл `supabase/ai.sql` → **Run** (ИИ-помощник и лимиты).
 5. **Authentication → Sign In / Providers → Email**: если не хотите, чтобы студенты подтверждали почту, выключите **Confirm email**.
-6. **Project Settings → API**: скопируйте `Project URL`, `anon public` и `service_role` — понадобятся на шаге 3.
+6. Скопируйте три значения — понадобятся на шаге 3:
+   - **Project URL** — кнопка **Connect** вверху страницы проекта (вид `https://xxxx.supabase.co`);
+   - **Publishable key** (`sb_publishable_...`) и **Secret key** (`sb_secret_...`) — **Project Settings → API Keys**. Секретный ключ показывается по кнопке с глазком.
 
 ### 2. GitHub
 Загрузите папку проекта в новый **приватный** репозиторий (например, через GitHub Desktop или `git push`).
@@ -30,8 +32,8 @@ Next.js 15 + Supabase (база, вход, хранилище файлов). И�
    | Имя | Значение |
    |---|---|
    | `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon public |
-   | `SUPABASE_SERVICE_ROLE_KEY` | service_role (секрет!) |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Publishable key (`sb_publishable_...`) |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Secret key (`sb_secret_...`) — секрет! |
    | `GEMINI_API_KEY` | ключ Gemini API (секрет!) |
    | `GEMINI_MODEL` | необязательно; по умолчанию `gemini-flash-latest` |
 3. **Deploy**. Через 1–2 минуты получите адрес вида `ai-courses.vercel.app`.

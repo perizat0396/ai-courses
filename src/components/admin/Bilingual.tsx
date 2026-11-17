@@ -6,9 +6,9 @@ import { tr } from '@/lib/tr';
 /** Поле RU/KZ с вкладками и предпросмотром Markdown. Оба textarea остаются в форме. */
 export function Bilingual({ name, label, ru, kk, rows = 12, hint, uiKk }: { name: string; label: string; ru: string; kk: string; rows?: number; hint?: string; uiKk?: boolean }) {
   const L = tr(uiKk);
-  const [tab, setTab] = useState<'ru' | 'kk' | 'preview'>('ru');
+  const [tab, setTab] = useState<'ru' | 'kk' | 'preview'>(uiKk ? 'kk' : 'ru');
   const [vals, setVals] = useState({ ru, kk });
-  const [pvLang, setPvLang] = useState<'ru' | 'kk'>('ru');
+  const [pvLang, setPvLang] = useState<'ru' | 'kk'>(uiKk ? 'kk' : 'ru');
   return (
     <div>
       <div className="mb-2 flex flex-wrap items-center gap-4">

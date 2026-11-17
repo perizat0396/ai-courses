@@ -1,4 +1,5 @@
 'use server';
+import { getLang } from '@/lib/i18n';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
@@ -147,9 +148,9 @@ export async function addQuestion(lessonId: string, f: FormData) {
   const opts = lines(s(f, 'options_ru'));
   const optsKk = lines(s(f, 'options_kk'));
   const correct = parseInt(s(f, 'correct'), 10) - 1;
-  if (!s(f, 'question_ru') || opts.length < 2) throw new Error('Нужен вопрос и минимум 2 варианта ответа');
-  if (!(correct >= 0 && correct < opts.length)) throw new Error('Номер правильного ответа вне диапазона');
-  if (optsKk.length && optsKk.length !== opts.length) throw new Error('Количество вариантов на казахском должно совпадать с русским');
+  if (!s(f, 'question_ru') || opts.length < 2) throw new Error((await getLang()) === 'kk' ? 'Сұрақ және кемінде 2 жауап нұсқасы қажет' : 'Нужен вопрос и минимум 2 варианта ответа');
+  if (!(correct >= 0 && correct < opts.length)) throw new Error((await getLang()) === 'kk' ? 'Дұрыс жауап нөмірі ауқымнан тыс' : 'Номер правильного ответа вне диапазона');
+  if (optsKk.length && optsKk.length !== opts.length) throw new Error((await getLang()) === 'kk' ? 'Қазақша нұсқалар саны орысшамен бірдей болуы керек' : 'Количество вариантов на казахском должно совпадать с русским');
   const { data: last } = await supabase.from('quiz_questions').select('position').eq('lesson_id', lessonId).order('position', { ascending: false }).limit(1).maybeSingle();
   const { data, error } = await supabase.from('quiz_questions').insert({
     lesson_id: lessonId, question_ru: s(f, 'question_ru'), question_kk: s(f, 'question_kk'),
@@ -180,19 +181,19 @@ export async function createStudent(_: CreateStudentState, f: FormData): Promise
   const { supabase } = await requireAdmin();
   const email = s(f, 'email').toLowerCase();
   const password = s(f, 'password');
-  if (!email || password.length < 6) return { error: 'Укажите email и пароль (минимум 6 символов)' };
+  if (!email || password.length < 6) return { error: (await getLang()) === 'kk' ? 'Email мен құпиясөзді көрсетіңіз (кемінде 6 таңба)' : 'Укажите email и пароль (минимум 6 символов)' };
   let admin;
   try { admin = createAdminClient(); } catch (e) { return { error: (e as Error).message }; }
   const { data, error } = await admin.auth.admin.createUser({
     email, password, email_confirm: true, user_metadata: { full_name: s(f, 'full_name') },
   });
-  if (error) return { error: error.message.includes('already') ? 'Пользователь с таким email уже есть — найдите его в списке и откройте доступ' : error.message };
+  if (error) return { error: error.message.includes('already') ? ((await getLang()) === 'kk' ? 'Мұндай email-мен пайдаланушы бар — оны тізімнен тауып, қолжетімділік ашыңыз' : 'Пользователь с таким email уже есть — найдите его в списке и откройте доступ') : error.message };
   const courseIds = f.getAll('courses').map(String).filter(Boolean);
   if (courseIds.length) {
     await supabase.from('enrollments').upsert(courseIds.map((course_id) => ({ user_id: data.user.id, course_id })));
   }
   done();
-  return { ok: `Студент ${email} создан. Передайте ему email и пароль для входа.` };
+  return { ok: (await getLang()) === 'kk' ? `${email} студенті құрылды. Кіру үшін оған email мен құпиясөзді беріңіз.` : `Студент ${email} создан. Передайте ему email и пароль для входа.` };
 }
 
 // ---------------- Проверка заданий ----------------

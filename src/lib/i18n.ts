@@ -78,7 +78,7 @@ const kk: typeof ru = {
   hello: 'Сәлеметсіз бе',
   dashboard: 'Менің курстарым',
   profile: 'Профиль',
-  admin: 'Админка',
+  admin: 'Әкімші панелі',
   logout: 'Шығу',
   login: 'Кіру',
   register: 'Тіркелу',

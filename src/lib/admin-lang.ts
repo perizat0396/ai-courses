@@ -8,6 +8,3 @@ export async function adminLang() {
     (kk && o?.title_kk ? o.title_kk : o?.title_ru) ?? '';
   return { kk, L, T };
 }
-
-/** То же для клиентских компонентов (язык передаётся пропом). */
-export const tr = (kk: boolean | undefined) => (ru: string, kz: string) => (kk ? kz : ru);

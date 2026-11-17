@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
-import { tr } from '@/lib/admin-lang';
+import { tr } from '@/lib/tr';
 
 export function ReviewForm({ id, feedback, aiFeedback, aiOn, action, kk }: {
   id: string; feedback: string; aiFeedback: string; aiOn: boolean; action: (f: FormData) => Promise<void>; kk?: boolean;

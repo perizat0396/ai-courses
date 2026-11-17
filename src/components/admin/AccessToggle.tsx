@@ -1,5 +1,5 @@
 import { setAccess } from '@/app/admin/actions';
-import { tr } from '@/lib/admin-lang';
+import { tr } from '@/lib/tr';
 
 export function AccessToggle({ userId, courseId, on, label, kk }: { userId: string; courseId: string; on: boolean; label: string; kk?: boolean }) {
   const L = tr(kk);

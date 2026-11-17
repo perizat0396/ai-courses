@@ -1,7 +1,7 @@
 'use client';
 import { useActionState } from 'react';
 import { createStudent, type CreateStudentState } from '@/app/admin/actions';
-import { tr } from '@/lib/admin-lang';
+import { tr } from '@/lib/tr';
 
 export function CreateStudentForm({ courses, kk }: { courses: { id: string; title: string }[]; kk?: boolean }) {
   const L = tr(kk);

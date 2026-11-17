@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { addLessonFile, setLessonVideoPath } from '@/app/admin/actions';
-import { tr } from '@/lib/admin-lang';
+import { tr } from '@/lib/tr';
 
 const safeName = (n: string) => n.replace(/[^\wа-яА-ЯёЁәғқңөұүһіӘҒҚҢӨҰҮҺІ.\-]+/g, '_');
 const asciiKey = (n: string) => `${Date.now()}_${n.normalize('NFKD').replace(/[^\w.\-]+/g, '_').slice(-80)}`;

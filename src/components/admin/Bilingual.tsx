@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Markdown } from '../Markdown';
-import { tr } from '@/lib/admin-lang';
+import { tr } from '@/lib/tr';
 
 /** Поле RU/KZ с вкладками и предпросмотром Markdown. Оба textarea остаются в форме. */
 export function Bilingual({ name, label, ru, kk, rows = 12, hint, uiKk }: { name: string; label: string; ru: string; kk: string; rows?: number; hint?: string; uiKk?: boolean }) {

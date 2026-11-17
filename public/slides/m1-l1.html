@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Занятие 1. Первая работа с инструментами искусственного интеллекта</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Курс «Искусственный интеллект для начинающих» · тёмно-синий фон, жёлтый маркер как в видео, крупный текст для взрослой аудитории */
+:root{
+  --bg:#0E1226; --bg2:#141936; --card:#1A2044; --card2:#212856; --line:#2B336A;
+  --ink:#F5F6FB; --ink2:#C2C7E0; --ink3:#8189AE;
+  --sun:#FFC21A; --sun2:#FFD866; --blue:#5B86FF; --violet:#8C6CFF; --red:#FF6B5E; --green:#34D399;
+  --display:'Montserrat',"Segoe UI",Arial,sans-serif; --body:'Golos Text',"Segoe UI",Arial,sans-serif;
+  --ease:cubic-bezier(.16,.84,.24,1); --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#05070f;color:var(--ink);font-family:var(--body);overflow:hidden}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.viewport{position:fixed;inset:0;overflow:hidden}
+.stage{width:1920px;height:1080px;position:absolute;left:50%;top:50%;transform-origin:center;overflow:hidden;cursor:pointer;
+  background:radial-gradient(1100px 700px at 85% -10%,rgba(140,108,255,.28),transparent 60%),radial-gradient(900px 600px at -10% 110%,rgba(91,134,255,.20),transparent 60%),var(--bg)}
+.stage:before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1.5px,transparent 1.5px);background-size:44px 44px;pointer-events:none}
+.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* слайды */
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transform:translateX(70px);transition:transform .9s var(--ease),opacity .55s ease,visibility 0s linear .9s}
+.slide.active{opacity:1;visibility:visible;transform:none;z-index:2;transition:transform .9s var(--ease),opacity .55s ease,visibility 0s}
+.slide.out{transform:translateX(-70px)}
+.stage.back .slide:not(.active){transform:translateX(-70px)}
+.stage.back .slide.out{transform:translateX(70px)}
+.pad{position:absolute;inset:0;padding:92px 120px 120px}
+.pad.two{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.col{display:flex;flex-direction:column;justify-content:center}
+.col.center{align-items:stretch}
+
+.r{opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .95s var(--ease);transition-delay:calc(var(--d,0) * 1s)}
+.r.left{transform:translateX(-70px)} .r.right{transform:translateX(70px)} .r.zoom{transform:scale(.7)}
+.in .r{opacity:1;transform:none}
+.r.zoom{transition-timing-function:ease,var(--spring)}
+[data-step]{opacity:0;transform:translateY(24px) scale(.96);transition:opacity .45s ease,transform .6s var(--spring)}
+[data-step].on{opacity:1;transform:none}
+
+/* типографика */
+.kick{font:700 22px/1 var(--display);letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-bottom:26px}
+.kick b{color:var(--sun)}
+.h1{font:900 104px/1.02 var(--display);letter-spacing:-.02em;text-wrap:balance}
+.h2{font:800 72px/1.08 var(--display);letter-spacing:-.015em;text-wrap:balance;max-width:1600px}
+.h2.narrow{max-width:1150px}
+.hl{background:var(--sun);color:var(--bg);padding:0 .16em;border-radius:.14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.lead{font:500 34px/1.4 var(--body);color:var(--ink2);margin-top:26px;max-width:1300px}
+.hint{font:500 26px/1.4 var(--body);color:var(--ink3);margin-top:30px}
+.muted{color:var(--ink3)}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:28px}
+.side-h{font:800 26px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--sun);margin:0 0 18px}
+.side-p{font:500 30px/1.4 var(--body);color:var(--ink2);margin-top:22px}
+.foot-note{position:absolute;left:120px;bottom:70px;font:500 24px/1.4 var(--body);color:var(--ink3)}
+
+/* промпт и копирование */
+.prompt{position:relative;background:#fff;color:#151935;border-radius:26px 26px 26px 8px;padding:30px 34px 86px;font:500 32px/1.45 var(--body);box-shadow:0 30px 60px -30px rgba(0,0,0,.6)}
+.prompt.big{font-size:36px}
+.prompt.wide{max-width:1500px;margin-top:40px;padding-bottom:30px;padding-right:280px}
+.prompt.wide .copy{top:50%;bottom:auto;transform:translateY(-50%)}
+.pq:before{content:"›";color:var(--blue);font-weight:800;margin-right:.35em}
+.copy{position:absolute;right:22px;bottom:20px;display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:14px;background:var(--sun);color:var(--bg);font:700 22px/1 var(--display);transition:transform .2s,background .2s}
+.copy .ic{font-size:24px}
+.copy:hover{transform:translateY(-2px)}
+.copy.done{background:var(--green);color:#06291c}
+.ph .copy,.vcard .copy,.variant .copy{position:static;flex:none}
+
+/* 0. видео */
+.video-slide{background:#000}
+.vwrap{position:absolute;inset:0}
+.vwrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.vcover{position:absolute;inset:0;padding:110px 130px;display:flex;flex-direction:column;justify-content:center;gap:40px;
+  background:radial-gradient(1000px 700px at 80% 20%,rgba(140,108,255,.35),transparent 60%),linear-gradient(90deg,rgba(14,18,38,.97) 40%,rgba(14,18,38,.75));transition:opacity .6s}
+.vcover.hide{opacity:0;pointer-events:none}
+.vc-top{display:flex;gap:16px}
+.pill{display:inline-flex;padding:14px 24px;border-radius:99px;background:var(--sun);color:var(--bg);font:700 24px/1 var(--display)}
+.pill.ghost{background:rgba(255,255,255,.1);color:var(--ink)}
+.vcover .h1{font-size:112px;max-width:1500px}
+.bigplay{align-self:flex-start;display:inline-flex;align-items:center;gap:22px;padding:24px 40px 24px 26px;border-radius:99px;background:#fff;color:var(--bg);font:800 34px/1 var(--display);box-shadow:0 24px 50px -24px rgba(0,0,0,.7)}
+.bigplay .ic{font-size:30px;width:76px;height:76px;padding:22px;border-radius:50%;background:var(--sun);fill:var(--bg);stroke:none}
+.bigplay small{font:600 24px/1 var(--body);color:#6b7194}
+.bigplay:hover{transform:scale(1.03)}
+.vnext{position:absolute;right:60px;bottom:60px;display:none;align-items:center;gap:14px;padding:22px 34px;border-radius:99px;background:var(--sun);color:var(--bg);font:800 30px/1 var(--display);box-shadow:0 20px 50px -10px rgba(0,0,0,.6);z-index:5}
+.vnext.show{display:inline-flex}
+
+/* 1. вопрос */
+.qbig{font-size:66px;max-width:1650px}
+.opts{display:flex;flex-wrap:wrap;gap:18px 18px;margin-top:54px;max-width:1700px}
+.opt{display:inline-flex;align-items:center;gap:16px;padding:22px 30px;border-radius:20px;background:var(--card);border:2px solid var(--line);font:600 31px/1.2 var(--body);transition:background .25s,border-color .25s,transform .3s var(--spring)}
+.opt .ic{font-size:34px;color:var(--sun)}
+.opt:hover{border-color:var(--sun)}
+.opt.picked{background:var(--sun);color:var(--bg);border-color:var(--sun);transform:scale(1.04)}
+.opt.picked .ic{color:var(--bg)}
+.opt.own input{background:none;border:0;outline:0;color:inherit;font:600 31px/1.2 var(--body);width:420px}
+.opt.own input::placeholder{color:var(--ink3)}
+
+/* разделители */
+.divider .div-pad{display:flex;flex-direction:column;justify-content:center}
+.divider .h1{max-width:1500px}
+.dnum{position:absolute;right:90px;bottom:-60px;font:900 620px/.8 var(--display);color:transparent;-webkit-text-stroke:4px rgba(255,194,26,.22)}
+.divider .kick{color:var(--sun)}
+
+/* 2. направления */
+.dirs{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:46px}
+.dir{position:relative;padding:34px 30px;display:flex;flex-direction:column;gap:20px;min-height:220px}
+.dir i{position:absolute;right:26px;top:22px;font:800 26px/1 var(--display);font-style:normal;color:var(--ink3)}
+.dir .ic{font-size:58px;color:var(--sun);stroke-width:1.7}
+.dir span{font:700 31px/1.25 var(--display)}
+.dir.main{background:var(--sun);color:var(--bg);border-radius:28px;justify-content:center}
+.dir.main .ic{color:var(--bg)}
+.dir.main span{font-size:30px}
+
+/* инструменты */
+.tool-head{display:flex;align-items:center;gap:30px}
+.tbadge{width:110px;height:110px;border-radius:30px;background:var(--sun);color:var(--bg);display:grid;place-items:center;font-size:58px;flex:none}
+.tbadge .ic{stroke-width:1.8}
+.tchips{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:34px}
+.tchips small{font:700 22px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-right:8px}
+.tchip{padding:14px 26px;border-radius:14px;background:var(--card2);border:1.5px solid var(--line);font:700 30px/1 var(--display)}
+.tool-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:50px;margin-top:40px;align-items:start}
+.can{padding:36px 40px}
+.can h3{font:800 32px/1 var(--display);margin-bottom:22px}
+.can ul{list-style:none;display:flex;flex-direction:column;gap:15px}
+.can li{display:flex;gap:16px;align-items:flex-start;font:500 31px/1.3 var(--body)}
+.can li .ic{font-size:30px;color:var(--green);margin-top:3px;stroke-width:2.6}
+.tool-side{display:flex;flex-direction:column}
+.callout{display:flex;gap:24px;align-items:flex-start;padding:34px 36px;border-radius:26px;background:var(--card2);border:2px solid var(--line);margin-top:6px}
+.callout>.ic{font-size:52px;flex:none}
+.callout h3{font:800 30px/1 var(--display);margin-bottom:14px}
+.callout p{font:500 31px/1.4 var(--body);color:var(--ink2)}
+.callout p b{color:var(--ink)}
+.callout.warn{border-color:rgba(255,194,26,.6)} .callout.warn>.ic{color:var(--sun)}
+.callout.sun{background:var(--sun);border-color:var(--sun);margin-top:24px} .callout.sun *{color:var(--bg)!important}
+.callout.danger{border-color:rgba(255,107,94,.7);background:rgba(255,107,94,.1)} .callout.danger>.ic{color:var(--red)}
+.voice{padding:30px 34px;display:flex;flex-direction:column;gap:22px}
+.voice p{font:500 31px/1.4 var(--body)}
+.wave{display:flex;gap:9px;align-items:center;height:90px}
+.wave i{width:14px;height:calc(var(--h) * 1%);border-radius:8px;background:var(--sun);animation:wv 1.2s ease-in-out infinite alternate}
+.wave i:nth-child(2n){animation-delay:-.4s;background:var(--blue)} .wave i:nth-child(3n){animation-delay:-.8s}
+@keyframes wv{to{transform:scaleY(.45)}}
+.filmstrip{display:flex;gap:16px;padding:22px}
+.filmstrip .fr{flex:1;height:150px;border-radius:16px;background:var(--card2);display:grid;place-items:center;font-size:56px;color:var(--ink3)}
+.filmstrip .fr:last-child{color:var(--sun)}
+
+/* 10. хаб */
+.hub{position:absolute;left:50%;top:640px;width:1500px;height:560px;transform:translate(-50%,-50%)}
+.spokes{position:absolute;inset:0;width:100%;height:100%}
+.spokes line{stroke:var(--sun);stroke-width:.25;stroke-dasharray:.6 1.2;opacity:.7}
+.core{position:absolute;left:50%;top:50%;width:320px;height:320px;margin:-160px 0 0 -160px;border-radius:50%;background:var(--sun);color:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;outline:3px dashed rgba(255,194,26,.45);outline-offset:22px}
+.core .ic{font-size:60px}
+.core b{font:900 40px/1.1 var(--display)} .core small{font:600 26px var(--body)}
+.sat{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:16px;padding:22px 30px;border-radius:22px;background:var(--card);border:2px solid var(--line);font:700 32px/1 var(--display);white-space:nowrap}
+.in .sat.r{transform:translate(-50%,-50%)}
+.sat.r.zoom{transform:translate(-50%,-50%) scale(.6)}
+.in .sat.r.zoom{transform:translate(-50%,-50%)}
+.sat .ic{font-size:40px;color:var(--sun)}
+
+/* 11. таблица */
+.tbl{margin-top:40px;border-radius:28px;overflow:hidden;border:1.5px solid var(--line)}
+.tbl .th,.tbl .tr{display:grid;grid-template-columns:70px 560px 1fr;align-items:center;gap:20px;padding:20px 36px}
+.tbl .th{grid-template-columns:630px 1fr;background:var(--card2);font:700 24px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.tbl .tr{background:var(--card);border-top:1.5px solid var(--line)}
+.tbl .tr .ic{font-size:40px;color:var(--sun)}
+.tbl .tr b{font:700 33px/1.2 var(--display)}
+.tbl .tr span{display:flex;flex-wrap:wrap;gap:10px}
+.tbl .tr em{font:600 27px/1 var(--body);font-style:normal;padding:12px 18px;border-radius:12px;background:var(--card2)}
+.rule-bar{display:inline-flex;align-items:center;gap:20px;margin-top:34px;padding:24px 34px;border-radius:22px;background:var(--sun);color:var(--bg);font:800 32px/1.25 var(--display)}
+.rule-bar .ic{font-size:40px}
+
+/* 12. повседневное */
+.daily{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:34px}
+.dly{padding:28px 28px;display:flex;flex-direction:column;align-items:flex-start;gap:18px;text-align:left;min-height:190px;transition:background .25s,border-color .25s}
+.dly .ic{font-size:50px;color:var(--sun)}
+.dly span{font:600 30px/1.3 var(--body)}
+.dly.picked{background:var(--sun);color:var(--bg);border-color:var(--sun)} .dly.picked .ic{color:var(--bg)}
+.ask{display:flex;align-items:center;gap:22px;margin-top:36px;padding:26px 34px;border-radius:24px;background:linear-gradient(90deg,rgba(140,108,255,.35),rgba(91,134,255,.18));border:1.5px solid rgba(140,108,255,.6);font:800 34px/1.3 var(--display);max-width:1500px}
+.ask .ic{font-size:50px;color:var(--sun)}
+.ask.final{margin-top:30px;font-size:36px}
+
+/* 13 */
+.answer{display:flex;flex-direction:column;gap:14px;margin-top:40px;padding:40px 44px;border-radius:30px;background:var(--sun);color:var(--bg)}
+.answer b{font:900 110px/1 var(--display)}
+.answer span{font:700 40px/1.25 var(--display)}
+.answer.no{background:var(--red);color:#2a0905}
+.chat{gap:26px}
+.bubble{align-self:flex-end;max-width:760px;padding:26px 32px;border-radius:28px 28px 8px 28px;background:#fff;color:#151935;font:500 34px/1.4 var(--body);box-shadow:0 24px 50px -24px rgba(0,0,0,.6)}
+.bubble:nth-child(2n){align-self:flex-start;border-radius:28px 28px 28px 8px;background:var(--card2);color:var(--ink);border:1.5px solid var(--line)}
+
+/* 14 */
+.def{margin-top:34px;font:500 42px/1.4 var(--body);max-width:1550px;padding-left:30px;border-left:8px solid var(--sun)}
+.def b{font-weight:800;color:var(--sun)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:46px}
+.pcard{padding:34px 36px;display:flex;flex-direction:column;gap:22px}
+.plabel{display:inline-flex;align-self:flex-start;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;background:var(--card2);font:800 26px/1 var(--display);color:var(--sun);text-transform:uppercase;letter-spacing:.08em}
+.plabel .ic{font-size:28px}
+.pcard p{font:600 36px/1.35 var(--body)}
+
+/* 15 */
+.mind{position:relative;height:560px;margin-top:20px}
+.mind-center{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);padding:40px 56px;border-radius:30px;background:#fff;color:#151935;text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+.in .mind-center.r{transform:translate(-50%,-50%)}
+.mind-center small{display:block;font:700 22px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:#7a80a3;margin-bottom:14px}
+.mind-center b{font:800 52px/1.1 var(--display)}
+.mq{position:absolute;display:inline-flex;align-items:center;gap:14px;padding:20px 28px;border-radius:20px;background:var(--card2);border:2px solid var(--violet);font:700 32px/1 var(--display)}
+.mq .ic{font-size:36px;color:var(--violet)}
+
+/* 16 */
+.formula{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:50px}
+.fx{position:relative;padding:40px 36px;display:flex;flex-direction:column;gap:18px;min-height:360px}
+.fx i{position:absolute;right:28px;top:20px;font:900 80px/1 var(--display);font-style:normal;color:var(--card2)}
+.fx .ic{font-size:64px;color:var(--sun);stroke-width:1.7}
+.fx h3{font:800 44px/1 var(--display);margin-top:auto}
+.fx p{font:500 30px/1.35 var(--body);color:var(--ink2)}
+.fbar,.final-f{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:40px;padding:28px;border-radius:24px;background:var(--sun);color:var(--bg);font:900 44px/1 var(--display)}
+.fbar span,.final-f span{padding:8px 20px;border-radius:12px;background:rgba(14,18,38,.1)}
+
+/* 17 */
+.vs{display:grid;grid-template-columns:1fr 120px 1.6fr;gap:24px;align-items:stretch;margin-top:40px}
+.vcard{padding:32px 34px;display:flex;flex-direction:column;gap:20px}
+.vcard small{font:700 22px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.vcard .pq{font:500 36px/1.45 var(--body);flex:1}
+.vcard .copy{align-self:flex-start}
+.vcard.good{border-color:var(--sun)}
+.vcard mark{background:transparent;color:inherit;border-radius:8px;padding:0 4px;transition:background .4s,color .4s}
+.vcard mark.on{background:var(--sun);color:var(--bg);opacity:1;transform:none}
+.vcard mark[data-step]{opacity:1;transform:none}
+.vs-mid{align-self:center;justify-self:center;width:110px;height:110px;border-radius:50%;background:var(--violet);display:grid;place-items:center;font:900 36px/1 var(--display)}
+.tags{display:flex;gap:18px;margin-top:26px}
+.tag{display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:16px;background:var(--sun);color:var(--bg);font:800 30px/1 var(--display)}
+.tag .ic{font-size:32px}
+
+/* 18 */
+.acts{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+.act-chip{display:inline-flex;align-items:center;gap:12px;padding:16px 24px;border-radius:16px;background:var(--card);border:1.5px solid var(--line);font:600 30px/1.1 var(--body)}
+.act-chip .ic{font-size:28px;color:var(--sun)}
+.dialog{display:flex;flex-direction:column;gap:18px;padding:40px;border-radius:32px;background:var(--card);border:1.5px solid var(--line)}
+.d-me{align-self:flex-end;padding:18px 26px;border-radius:22px 22px 6px 22px;background:#fff;color:#151935;font:600 30px/1.2 var(--body)}
+.d-ai{align-self:flex-start;display:flex;flex-direction:column;gap:10px;width:440px;padding:22px 26px;border-radius:22px 22px 22px 6px;background:var(--card2)}
+.d-ai i{display:block;height:14px;border-radius:7px;background:var(--line)}
+.d-ai i:nth-child(2){width:80%} .d-ai i:nth-child(3){width:60%}
+.d-ai.tablelike{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.d-ai.tablelike i{height:40px;width:auto;border-radius:6px;background:rgba(255,194,26,.35)}
+.bottom-rule{position:absolute;left:120px;right:120px;bottom:70px;display:flex;align-items:center;justify-content:center;gap:20px;padding:26px;border-radius:24px;background:var(--sun);color:var(--bg);font:800 36px/1.2 var(--display)}
+.bottom-rule .ic{font-size:44px}
+.bottom-rule.danger{background:var(--red);color:#2a0905}
+
+/* 19 */
+.phr{display:grid;grid-template-columns:1fr 1fr;gap:18px 26px;margin-top:40px}
+.phr.one{grid-template-columns:1fr;gap:14px;margin-top:22px}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 22px 22px 32px}
+.ph span{font:600 33px/1.25 var(--body)}
+.phr.one .ph{padding:14px 16px 14px 28px}
+.phr.one .ph span{font-size:30px}
+
+/* 20 */
+.nums{list-style:none;display:flex;flex-direction:column;gap:18px;margin-top:30px}
+.nums li{display:flex;align-items:center;gap:22px;font:600 34px/1.25 var(--body)}
+.nums i,.disc i{width:60px;height:60px;border-radius:50%;background:var(--sun);color:var(--bg);display:grid;place-items:center;font:900 28px/1 var(--display);font-style:normal;flex:none}
+
+/* 21 */
+.chk{display:flex;flex-wrap:wrap;gap:16px;margin-top:26px}
+.ck{display:inline-flex;align-items:center;gap:14px;padding:18px 26px;border-radius:18px;background:var(--card);border:2px solid rgba(255,107,94,.5);font:700 31px/1 var(--display)}
+.ck .ic{font-size:36px;color:var(--red)}
+
+/* 22 */
+.ny{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:46px}
+.nycol{padding:40px 44px}
+.nycol h3{display:flex;align-items:center;gap:16px;font:800 40px/1 var(--display);margin-bottom:28px}
+.nycol h3 .ic{font-size:30px;width:64px;height:64px;padding:16px;border-radius:50%;stroke-width:3}
+.nycol.no{border-color:rgba(255,107,94,.6)} .nycol.no h3 .ic{background:var(--red);color:#2a0905}
+.nycol.yes{border-color:rgba(52,211,153,.6)} .nycol.yes h3 .ic{background:var(--green);color:#06291c}
+.nycol ul{list-style:none;display:flex;flex-direction:column;gap:18px}
+.nycol li{display:flex;align-items:center;gap:18px;font:600 33px/1.2 var(--body)}
+.nycol li .ic{font-size:38px;color:var(--ink3)}
+.nycol.no li .ic{color:var(--red)} .nycol.yes li .ic{color:var(--green)}
+
+/* 23 */
+.opens{display:flex;gap:18px;margin-top:30px;flex-wrap:wrap}
+.openb{display:inline-flex;align-items:center;gap:12px;padding:20px 30px;border-radius:18px;background:var(--card2);border:2px solid var(--line);color:var(--ink);text-decoration:none;font:800 30px/1 var(--display);transition:border-color .2s,transform .2s}
+.openb .ic{font-size:26px;color:var(--sun)}
+.openb:hover{border-color:var(--sun);transform:translateY(-3px)}
+.qrow{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px}
+.qq{display:flex;align-items:center;gap:18px;padding:28px 30px;font:700 31px/1.25 var(--display)}
+.qq .ic{font-size:44px;color:var(--violet)}
+
+/* 24 */
+.variants{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:44px}
+.variant{padding:32px 36px;display:flex;flex-direction:column;gap:18px;cursor:pointer;transition:border-color .25s,background .25s,transform .3s var(--spring)}
+.vh{display:flex;align-items:center;gap:18px}
+.vh .ic{font-size:46px;color:var(--sun)}
+.vh b{font:800 32px/1 var(--display)}
+.variant p{font:500 34px/1.35 var(--body);flex:1}
+.variant .copy{align-self:flex-start}
+.variant.picked{border-color:var(--sun);background:var(--card2);transform:scale(1.02);border-width:3px}
+
+/* практика */
+.prac{position:absolute;inset:0}
+.prac-panel{position:absolute;left:0;top:0;bottom:0;width:640px;background:var(--sun);color:var(--bg);border-radius:0 70px 70px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.prac-panel small{font:700 22px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;margin-top:90px;opacity:.75}
+.prac-panel>b{font:900 50px/1 var(--display);margin-top:90px}
+.prac-text{position:absolute;left:740px;right:110px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center}
+.prac-text .h2{font-size:64px}
+.step-n{color:var(--ink3)}
+.prac-text .prompt{margin-top:4px}
+.prac-text .side-h{margin-top:34px}
+.checkq{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 30px}
+.checkq span{display:flex;align-items:center;gap:14px;padding:18px 22px;border-radius:16px;background:var(--card);border:1.5px solid var(--line);font:600 29px/1.25 var(--body)}
+.checkq .ic{font-size:34px;color:var(--sun)}
+.timer{position:relative;width:420px;height:420px;cursor:pointer}
+.timer>svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer circle{fill:none;stroke-width:12}
+.timer .tb{stroke:rgba(14,18,38,.15)}
+.timer .tf{stroke:var(--bg);stroke-linecap:round;stroke-dasharray:553;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear}
+.timer .tv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.timer .tv b{font:900 104px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.timer .tv span{font:600 22px/1.2 var(--body);opacity:.75;margin-top:10px;text-align:center;max-width:240px}
+.tctl{position:absolute;left:50%;bottom:-56px;transform:translateX(-50%);display:flex;gap:14px}
+.tctl button{width:72px;height:72px;border-radius:50%;background:var(--bg);color:var(--sun);display:grid;place-items:center;font-size:30px}
+.tgo .ic{fill:currentColor;stroke:none}
+.timer.done .tv b{animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* 29 */
+.disc{list-style:none;display:flex;flex-direction:column;gap:22px;margin-top:46px}
+.disc li{display:flex;align-items:center;gap:26px;padding:24px 32px;border-radius:24px;background:var(--card);border:1.5px solid var(--line);font:700 40px/1.2 var(--display)}
+.disc i{width:70px;height:70px;font-size:32px}
+
+/* 30 */
+.thoughts{display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;margin-top:36px}
+.tt{display:flex;align-items:center;gap:18px;font:600 32px/1.25 var(--body)}
+.tt .ic{font-size:30px;width:52px;height:52px;padding:11px;border-radius:50%;background:var(--green);color:#06291c;stroke-width:3}
+.final-f{margin-top:36px;font-size:38px}
+.final-f b{font-size:52px}
+.final-f em{font-style:normal;padding:8px 22px;border-radius:12px;background:var(--bg);color:var(--sun)}
+
+/* интерфейс */
+.foot{position:absolute;left:120px;right:120px;bottom:30px;display:flex;justify-content:space-between;font:600 18px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);z-index:40;pointer-events:none}
+.foot b{color:var(--sun)}
+.stage.nofoot .foot{opacity:0}
+.bar{position:absolute;left:0;bottom:0;height:6px;background:var(--sun);z-index:40;transition:width .8s var(--ease)}
+.sn{display:none}
+.notes{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);width:min(980px,calc(100% - 32px));max-height:40vh;overflow:auto;background:rgba(10,13,30,.97);color:#e7e9f5;border:1px solid #2b336a;border-radius:18px;padding:20px 26px;font:400 17px/1.55 var(--body);z-index:80}
+.notes h5{font:700 13px/1 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--sun);margin-bottom:10px}
+.notes em{color:#fff;font-style:normal;font-weight:600} .notes .act{color:var(--sun);font-weight:600} .notes p+p{margin-top:8px}
+.help{position:fixed;right:16px;top:16px;z-index:85;background:rgba(10,13,30,.95);color:#e7e9f5;border:1px solid #2b336a;border-radius:14px;padding:16px 20px;font:400 15px/1.75 var(--body)}
+.help b{display:inline-block;min-width:110px;color:var(--sun);font-weight:600}
+.toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:95;background:#fff;color:#151935;padding:12px 20px;border-radius:12px;font:600 15px/1.4 var(--body);opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.navbtns{position:fixed;left:14px;bottom:14px;display:flex;gap:8px;z-index:70;opacity:0;transition:opacity .3s}
+body:hover .navbtns{opacity:1}
+.navbtns button{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font-size:20px;display:grid;place-items:center}
+.navbtns button:hover{background:var(--sun);color:var(--bg)}
+.wipe{position:absolute;inset:0;z-index:50;pointer-events:none;background:var(--sun);transform:translateX(-101%)}
+.wipe.go{animation:wipe 1s cubic-bezier(.77,0,.18,1) forwards}
+@keyframes wipe{0%{transform:translateX(-101%)}45%,55%{transform:translateX(0)}100%{transform:translateX(101%)}}
+@media (prefers-reduced-motion: reduce){*,*:before,*:after{animation:none!important;transition:none!important}.r,[data-step].on{opacity:1!important;transform:none!important}}
+
+/* упрощённая версия для 50+ */
+.lead{font-size:38px}
+.opts.big{gap:22px;margin-top:60px}
+.opts.big .opt{font-size:38px;padding:28px 38px}
+.opts.big .opt .ic{font-size:42px}
+.cando{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:50px}
+.cd{padding:38px 40px;display:flex;flex-direction:column;gap:14px}
+.cd .ic{font-size:64px;color:var(--sun);stroke-width:1.7;margin-bottom:6px}
+.cd b{font:800 44px/1 var(--display)}
+.cd span{font:500 32px/1.3 var(--body);color:var(--ink2)}
+.apps{gap:24px}
+.app{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 20px;padding:34px 40px;color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
+.app b{font:900 52px/1 var(--display)}
+.app span{grid-column:1;font:500 30px/1.3 var(--body);color:var(--ink2)}
+.app .ic{grid-row:1/3;grid-column:2;font-size:40px;color:var(--sun)}
+.app:hover{border-color:var(--sun);transform:translateX(-6px)}
+.daily.three-col{grid-template-columns:repeat(3,1fr);gap:26px}
+.daily.three-col .dly{flex-direction:row;align-items:center;min-height:0;padding:34px 34px;gap:24px}
+.daily.three-col .dly span{font-size:36px}
+.daily.three-col .dly .ic{font-size:56px}
+.center-pad{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.center-pad .kick{position:absolute;left:120px;top:92px}
+.word{font:900 200px/1 var(--display);color:var(--sun);letter-spacing:-.03em}
+.def.big{border:0;padding:0;font-size:58px;margin-top:20px;max-width:1500px}
+.def.big b{color:var(--ink);background:rgba(255,194,26,.18);padding:0 .2em;border-radius:.15em}
+.prompt.mid{margin-top:60px;padding:30px 44px;font-size:42px}
+.mind-center b{font-size:64px}
+.mq{font-size:40px;padding:24px 34px}
+.mq .ic{font-size:44px}
+.formula .fx h3{font-size:46px}
+.formula .fx p{font-size:32px}
+.vcard .pq{font-size:40px}
+.tag{font-size:34px;padding:20px 30px}
+.phr.one .ph span{font-size:38px}
+.chk.big{gap:20px}
+.chk.big .ck{font-size:40px;padding:22px 32px}
+.chk.big .ck .ic{font-size:44px}
+.nycol.no ul{gap:26px}
+.nycol.no li{font-size:42px}
+.nycol.no li .ic{font-size:48px}
+.prac-text .lead{font-size:40px}
+.disc li{font-size:46px;padding:30px 36px}
+.rules5{display:flex;flex-direction:column;gap:20px;margin-top:44px}
+.r5{display:flex;align-items:center;gap:26px;font:700 44px/1.2 var(--display)}
+.r5 i{width:66px;height:66px;border-radius:50%;background:var(--sun);color:var(--bg);display:grid;place-items:center;font:900 32px/1 var(--display);font-style:normal;flex:none}
+.r5 .ic{font-size:46px;color:var(--sun)}
+.ask{font-size:40px}
+.variant p{font-size:38px}
+.vh b{font-size:40px}
+</style>
+</head>
+<body>
+<div class="viewport"><div class="stage" id="stage">
+<section class="slide video-slide" data-title="Видео: Что такое ИИ" >
+<div class="vwrap">
+  <video id="introVideo" class="ix" preload="auto" playsinline controlslist="nodownload" data-src="/media/intro-ai.mp4"></video>
+  <div class="vcover" id="vcover">
+    <div class="vc-top r"><span class="pill">Искусственный интеллект для начинающих</span><span class="pill ghost">Занятие 1</span></div>
+    <h1 class="h1 r" style="--d:.15">Первая работа<br>с <span class="hl">искусственным интеллектом</span></h1>
+    <button class="bigplay ix r" style="--d:.35" id="vplay" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg><span>Смотреть видео</span><small>1,5 минуты</small></button>
+  </div>
+  <button class="vnext ix" id="vnext" type="button">Дальше <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+</div>
+<div class="sn"><p><span class='act'>Запустите видео</span> «Что такое ИИ?». После видео нажмите «Дальше» или →.</p><p>Пробел — пауза и продолжение.</p></div>
+</section>
+<section class="slide " data-title="Вопрос" >
+<div class="pad">
+ <div class="kick r"><b>01</b> · Вопрос</div>
+ <h2 class="h2 qbig r" style="--d:.1">Что бы вы поручили искусственному интеллекту <span class="hl">сегодня</span>?</h2>
+ <div class="opts big"><button class="opt ix r" style="--d:0.25" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span>написать сообщение</span></button><button class="opt ix r" style="--d:0.32" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>найти информацию</span></button><button class="opt ix r" style="--d:0.39" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h4M7 17h7"/></svg><span>составить план</span></button><button class="opt ix r" style="--d:0.46" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 0-4 2.5-4 6v4h4"/></svg><span>подготовить меню</span></button><button class="opt ix r" style="--d:0.53" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg><span>сделать открытку</span></button><button class="opt ix r" style="--d:0.60" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/></svg><span>другое</span></button></div>
+ <p class="hint r" style="--d:.8">Выберите один ответ.</p>
+</div>
+<div class="sn"><p>Ответы у всех разные. ИИ умеет многое: писать, искать, рисовать, слушать голос, читать документы.</p></div>
+</section>
+<section class="slide " data-title="Что умеет ИИ" >
+<div class="pad">
+ <div class="kick r"><b>02</b> · Что умеет ИИ</div>
+ <h2 class="h2 r">ИИ помогает с <span class="hl">разными делами</span></h2>
+ <div class="cando"><div class="cd card r" style="--d:0.15"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><b>Пишет</b><span>письма, поздравления, сообщения</span></div><div class="cd card r" style="--d:0.23"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><b>Ищет</b><span>ответы на вопросы</span></div><div class="cd card r" style="--d:0.31"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg><b>Рисует</b><span>открытки и картинки</span></div><div class="cd card r" style="--d:0.39"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><b>Слушает</b><span>можно спросить голосом</span></div><div class="cd card r" style="--d:0.47"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg><b>Делает видео</b><span>из ваших фото</span></div><div class="cd card r" style="--d:0.55"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><b>Читает</b><span>документы и объясняет их</span></div></div>
+</div>
+<div class="sn"><p>Не нужно запоминать все сервисы. Главное — понять, что ИИ умеет разное.</p></div>
+</section>
+<section class="slide " data-title="Где найти ИИ" >
+<div class="pad two">
+ <div class="col">
+  <div class="kick r"><b>03</b> · С чего начать</div>
+  <h2 class="h2 r">Для начала хватит <span class="hl">одного</span> помощника</h2>
+  <p class="lead r" style="--d:.15">Все они бесплатные и понимают русский и казахский язык. Работают в телефоне и на компьютере.</p>
+ </div>
+ <div class="col apps">
+  <a class="app card ix r right" style="--d:0.25" href="https://chatgpt.com/" target="_blank" rel="noopener"><b>ChatGPT</b><span>самый известный помощник</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="app card ix r right" style="--d:0.37" href="https://gemini.google.com/" target="_blank" rel="noopener"><b>Gemini</b><span>помощник от Google</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="app card ix r right" style="--d:0.49" href="https://www.meta.ai/" target="_blank" rel="noopener"><b>Meta AI</b><span>есть в WhatsApp</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+ </div>
+</div>
+<div class="sn"><p>Покажите, где эти помощники открываются. Нажатие на карточку открывает сайт.</p></div>
+</section>
+<section class="slide " data-title="ИИ в жизни" >
+<div class="pad">
+ <div class="kick r"><b>04</b> · В жизни</div>
+ <h2 class="h2 r">Что можно сделать <span class="hl">с помощью ИИ</span>?</h2>
+ <div class="daily three-col"><button type="button" class="dly card ix r" style="--d:0.15"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9c-2-4-6-4-6-1.5S10 9 12 9zM12 9c2-4 6-4 6-1.5S14 9 12 9z"/></svg><span>поздравление с юбилеем</span></button><button type="button" class="dly card ix r" style="--d:0.22"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 0-4 2.5-4 6v4h4"/></svg><span>меню на неделю</span></button><button type="button" class="dly card ix r" style="--d:0.29"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11.5l2-8H6.5"/></svg><span>список покупок</span></button><button type="button" class="dly card ix r" style="--d:0.36"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg><span>план поездки</span></button><button type="button" class="dly card ix r" style="--d:0.43"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/></svg><span>объяснить сложный текст</span></button><button type="button" class="dly card ix r" style="--d:0.50"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg><span>открытка к празднику</span></button></div>
+ <div class="ask r" style="--d:.7"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17v.5"/></svg><b>Что из этого пригодится вам?</b></div>
+</div></section>
+<section class="slide " data-title="Говорите как с человеком" >
+<div class="pad two">
+ <div class="col">
+  <div class="kick r"><b>05</b> · Как говорить с ИИ</div>
+  <h2 class="h2 r">Пишите ИИ <span class="hl">обычными словами</span></h2>
+  <p class="lead r" style="--d:.2">Как будто просите знакомого. Ничего специального знать не нужно.</p>
+ </div>
+ <div class="chat col"><div class="bubble r right" style="--d:0.35">Объясни этот текст простыми словами.</div><div class="bubble r right" style="--d:0.55">Составь меню на неделю для двух человек.</div><div class="bubble r right" style="--d:0.75">Перепиши сообщение вежливее.</div></div>
+</div></section>
+<section class="slide " data-title="Что такое промпт" >
+<div class="pad center-pad">
+ <div class="kick r"><b>06</b> · Новое слово</div>
+ <div class="word r zoom" style="--d:.1">Промпт</div>
+ <p class="def big r" style="--d:.3">— это ваша <b>просьба</b> или <b>вопрос</b> к ИИ.</p>
+ <div class="r" style="--d:.5"><div class="prompt mid big"><span class="pq">Предложи мне полезный ужин.</span></div></div>
+</div></section>
+<section class="slide " data-title="ИИ не читает мысли" >
+<div class="pad">
+ <div class="kick r"><b>07</b> · Как говорить с ИИ</div>
+ <h2 class="h2 r">ИИ не умеет <span class="hl">читать мысли</span></h2>
+ <div class="mind">
+  <div class="mind-center r zoom" style="--d:.2"><b>«Составь план.»</b></div>
+  <div class="mq" data-step="1" style="left:6%;top:10%"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17v.5"/></svg>Какой план?</div><div class="mq" data-step="2" style="left:70%;top:8%"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17v.5"/></svg>Для кого?</div><div class="mq" data-step="3" style="left:74%;top:62%"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17v.5"/></svg>На сколько дней?</div><div class="mq" data-step="4" style="left:4%;top:62%"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17v.5"/></svg>Зачем?</div>
+ </div>
+ <div class="rule-bar" data-step="5"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg><b>Мало слов — общий ответ. Больше подробностей — лучше ответ.</b></div>
+</div>
+<div class="sn"><p>Спросите зал: что ИИ не знает об этом плане? Вопросы появляются по клику.</p></div>
+</section>
+<section class="slide " data-title="Как попросить точнее" >
+<div class="pad">
+ <div class="kick r"><b>08</b> · Как говорить с ИИ</div>
+ <h2 class="h2 r">Хорошая просьба отвечает на <span class="hl">4 вопроса</span></h2>
+ <div class="formula"><div class="fx card r" style="--d:0.15"><i>1</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg><h3>Что сделать?</h3><p>написать, найти, составить</p></div><div class="fx card r" style="--d:0.30"><i>2</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M22 20a7 7 0 0 0-4-6.3"/></svg><h3>Для кого?</h3><p>для подруги, для внука</p></div><div class="fx card r" style="--d:0.45"><i>3</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M4 12h16M4 18h7"/><circle cx="17" cy="6" r="2.5"/><circle cx="14" cy="18" r="2.5"/></svg><h3>Какие условия?</h3><p>коротко, дёшево, за 30 минут</p></div><div class="fx card r" style="--d:0.60"><i>4</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><h3>В каком виде?</h3><p>списком, таблицей</p></div></div>
+</div></section>
+<section class="slide " data-title="Сравним две просьбы" >
+<div class="pad">
+ <div class="kick r"><b>09</b> · Как говорить с ИИ</div>
+ <h2 class="h2 r">Какая просьба <span class="hl">лучше</span>?</h2>
+ <div class="vs">
+  <div class="vcard card r" style="--d:.15"><small>Коротко</small><p class="pq">Составь мне меню.</p></div>
+  <div class="vs-mid r zoom" style="--d:.3">или</div>
+  <div class="vcard card good r" style="--d:.4"><small>Подробно</small><p class="pq"><mark data-step="1">У меня есть курица, гречка и морковь.</mark> Предложи ужин <mark data-step="2">для двух человек</mark>, <mark data-step="3">не дольше 30 минут</mark>.</p><button class="copy ix" data-copy="У меня есть курица, гречка и морковь. Предложи ужин для двух человек, не дольше 30 минут." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div>
+ </div>
+ <div class="tags"><span class="tag" data-step="1"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 0-4 2.5-4 6v4h4"/></svg>какие продукты</span><span class="tag" data-step="2"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M22 20a7 7 0 0 0-4-6.3"/></svg>сколько человек</span><span class="tag" data-step="3"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>сколько времени</span></div>
+</div>
+<div class="sn"><p>Спросите: что есть во второй просьбе, чего нет в первой? По клику подсвечиваются продукты → количество человек → время.</p></div>
+</section>
+<section class="slide " data-title="Если ответ не понравился" >
+<div class="pad two">
+ <div class="col">
+  <div class="kick r"><b>10</b> · Как говорить с ИИ</div>
+  <h2 class="h2 r">Ответ не понравился? <span class="hl">Попросите ещё раз</span></h2>
+  <p class="lead r" style="--d:.15">С ИИ можно разговаривать сколько угодно. Он не обижается и не устаёт.</p>
+ </div>
+ <div class="col"><div class="phr one"><div class="ph card r" style="--d:0.25"><span>Объясни проще.</span><button class="copy ix" data-copy="Объясни проще." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div><div class="ph card r" style="--d:0.33"><span>Сделай короче.</span><button class="copy ix" data-copy="Сделай короче." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div><div class="ph card r" style="--d:0.41"><span>Предложи ещё варианты.</span><button class="copy ix" data-copy="Предложи ещё варианты." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div><div class="ph card r" style="--d:0.49"><span>Сделай теплее.</span><button class="copy ix" data-copy="Сделай теплее." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div><div class="ph card r" style="--d:0.57"><span>Напиши по-казахски.</span><button class="copy ix" data-copy="Напиши по-казахски." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div></div></div>
+</div></section>
+<section class="slide " data-title="Проверяйте важное" >
+<div class="pad two">
+ <div class="col">
+  <div class="kick r"><b>11</b> · Осторожно</div>
+  <h2 class="h2 r">ИИ <span class="hl">может ошибаться</span></h2>
+  <p class="lead r" style="--d:.15">Он говорит уверенно, даже когда ошибается.</p>
+ </div>
+ <div class="col">
+  <p class="lead r" style="--d:.25">Всегда проверяйте, если речь идёт о:</p>
+  <div class="chk big"><span class="ck r" style="--d:0.30"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>здоровье</span><span class="ck r" style="--d:0.37"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(-35 12 12)"/><path d="M9.5 8.5l5 7"/></svg>лекарства</span><span class="ck r" style="--d:0.44"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>деньги</span><span class="ck r" style="--d:0.51"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 21h14M6 7h12M6 7l-3 7a3 3 0 0 0 6 0zM18 7l-3 7a3 3 0 0 0 6 0z"/></svg>законы</span><span class="ck r" style="--d:0.58"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>новости</span></div>
+ </div>
+</div>
+<div class="bottom-rule danger r" style="--d:.8"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg><b>Важные решения принимайте сами — или с врачом, юристом, близкими.</b></div>
+</section>
+<section class="slide " data-title="Не отправляйте ИИ" >
+<div class="pad two">
+ <div class="col">
+  <div class="kick r"><b>12</b> · Безопасность</div>
+  <h2 class="h2 r">Никогда <span class="hl">не отправляйте</span> ИИ</h2>
+  <p class="lead r" style="--d:.15">Пишите просьбы без личных данных — ИИ поможет и так.</p>
+ </div>
+ <div class="col"><div class="nycol no card r right" style="--d:.25"><ul><li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 16.5a3.5 3.5 0 0 1 7 0M15 10h3M15 14h3"/></svg>ИИН</li><li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg>пароли и коды из СМС</li><li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>номер банковской карты</li><li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>домашний адрес</li><li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 8v6M9 11h6"/></svg>медицинские документы</li></ul></div></div>
+</div></section>
+<section class="slide " data-title="Посмотрим вместе" >
+<div class="pad">
+ <div class="kick r"><b>13</b> · Смотрим вместе</div>
+ <h2 class="h2 r">Одна просьба — <span class="hl">три помощника</span></h2>
+ <div class="r" style="--d:.15"><div class="prompt wide big"><span class="pq">Предложи полезный и недорогой ужин для двух человек. Готовить не дольше 30 минут. Ответ дай таблицей.</span><button class="copy ix" data-copy="Предложи полезный и недорогой ужин для двух человек. Готовить не дольше 30 минут. Ответ дай таблицей." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div></div>
+ <div class="r" style="--d:.3"><div class="opens"><a class="openb ix" href="https://chatgpt.com/" target="_blank" rel="noopener">Открыть ChatGPT <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="openb ix" href="https://gemini.google.com/" target="_blank" rel="noopener">Открыть Gemini <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="openb ix" href="https://www.meta.ai/" target="_blank" rel="noopener">Открыть Meta AI <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div></div>
+ <div class="ask r" style="--d:.5"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17v.5"/></svg><b>Какой ответ вам понятнее?</b></div>
+</div>
+<div class="sn"><p><span class='act'>Покажите:</span> вставьте одну и ту же просьбу в три помощника и сравните ответы вместе с залом.</p></div>
+</section>
+<section class="slide " data-title="Практика: выберите задание" >
+<div class="pad">
+ <div class="kick r"><b>14</b> · Практика</div>
+ <h2 class="h2 r">Теперь вы! <span class="hl">Выберите задание</span></h2>
+ <div class="variants"><div class="variant card ix r" style="--d:0.15" tabindex="0"><div class="vh"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><b>Поздравление</b></div><p>«Напиши тёплое поздравление с днём рождения.»</p></div><div class="variant card ix r" style="--d:0.25" tabindex="0"><div class="vh"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.5 0-4 2.5-4 6v4h4"/></svg><b>Меню</b></div><p>«Составь полезное меню на один день.»</p></div><div class="variant card ix r" style="--d:0.35" tabindex="0"><div class="vh"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg><b>Отдых</b></div><p>«Подготовь план отдыха на два дня.»</p></div><div class="variant card ix r" style="--d:0.45" tabindex="0"><div class="vh"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 9c0 3 3 6 6 6"/></svg><b>Сообщение</b></div><p>«Напиши вежливое приглашение на встречу в WhatsApp.»</p></div></div>
+</div></section>
+<section class="slide prac-slide" data-title="Шаг 1" >
+<div class="prac">
+ <div class="prac-panel r left"><div class="timer ix" data-min="3">
+ <svg viewBox="0 0 200 200"><circle class="tb" cx="100" cy="100" r="88"/><circle class="tf" cx="100" cy="100" r="88"/></svg>
+ <div class="tv"><b>03:00</b><span>нажмите, чтобы начать</span></div>
+ <div class="tctl"><button class="tgo ix" type="button" aria-label="Старт или пауза"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button><button class="trs ix" type="button" aria-label="Сначала"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+</div><b>3 минуты</b></div>
+ <div class="prac-text">
+  <div class="kick r"><b>15</b> · Практика</div>
+  <h2 class="h2 r"><span class="step-n">Шаг 1.</span> Напишите <span class="hl">просто</span></h2>
+  <p class="lead r" style="--d:.15">Откройте помощника и напишите задание своими словами.</p><div class="r" style="--d:.3"><div class="opens"><a class="openb ix" href="https://chatgpt.com/" target="_blank" rel="noopener">Открыть ChatGPT <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="openb ix" href="https://gemini.google.com/" target="_blank" rel="noopener">Открыть Gemini <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="openb ix" href="https://www.meta.ai/" target="_blank" rel="noopener">Открыть Meta AI <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div></div>
+ </div>
+</div>
+<div class="sn"><p>Таймер: ▶ — старт и пауза, ↺ — сначала.</p></div>
+</section>
+<section class="slide prac-slide" data-title="Шаг 2" >
+<div class="prac">
+ <div class="prac-panel r left"><div class="timer ix" data-min="7">
+ <svg viewBox="0 0 200 200"><circle class="tb" cx="100" cy="100" r="88"/><circle class="tf" cx="100" cy="100" r="88"/></svg>
+ <div class="tv"><b>07:00</b><span>нажмите, чтобы начать</span></div>
+ <div class="tctl"><button class="tgo ix" type="button" aria-label="Старт или пауза"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button><button class="trs ix" type="button" aria-label="Сначала"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+</div><b>7 минут</b></div>
+ <div class="prac-text">
+  <div class="kick r"><b>16</b> · Практика</div>
+  <h2 class="h2 r"><span class="step-n">Шаг 2.</span> Добавьте <span class="hl">подробности</span></h2>
+  <p class="lead r" style="--d:.15">Добавьте подробности: для кого, какие условия, в каком виде.</p><h3 class="side-h r" style="--d:.25">Например</h3><div class="r" style="--d:.3"><div class="prompt "><span class="pq">Напиши тёплое поздравление для подруги, ей исполняется 60 лет. Пять-шесть предложений, простыми словами.</span><button class="copy ix" data-copy="Напиши тёплое поздравление для подруги, ей исполняется 60 лет. Пять-шесть предложений, простыми словами." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div></div>
+ </div>
+</div>
+<div class="sn"><p>Таймер: ▶ — старт и пауза, ↺ — сначала.</p></div>
+</section>
+<section class="slide prac-slide" data-title="Шаг 3" >
+<div class="prac">
+ <div class="prac-panel r left"><div class="timer ix" data-min="5">
+ <svg viewBox="0 0 200 200"><circle class="tb" cx="100" cy="100" r="88"/><circle class="tf" cx="100" cy="100" r="88"/></svg>
+ <div class="tv"><b>05:00</b><span>нажмите, чтобы начать</span></div>
+ <div class="tctl"><button class="tgo ix" type="button" aria-label="Старт или пауза"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button><button class="trs ix" type="button" aria-label="Сначала"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+</div><b>5 минут</b></div>
+ <div class="prac-text">
+  <div class="kick r"><b>17</b> · Практика</div>
+  <h2 class="h2 r"><span class="step-n">Шаг 3.</span> <span class="hl">Улучшите</span> ответ</h2>
+  <p class="lead r" style="--d:.15">Попросите изменить ответ. Например:</p><div class="phr one"><div class="ph card r" style="--d:0.20"><span>Сделай короче.</span><button class="copy ix" data-copy="Сделай короче." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div><div class="ph card r" style="--d:0.28"><span>Сделай теплее.</span><button class="copy ix" data-copy="Сделай теплее." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div><div class="ph card r" style="--d:0.36"><span>Предложи ещё два варианта.</span><button class="copy ix" data-copy="Предложи ещё два варианта." type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Копировать</span></button></div></div>
+ </div>
+</div>
+<div class="sn"><p>Таймер: ▶ — старт и пауза, ↺ — сначала.</p></div>
+</section>
+<section class="slide prac-slide" data-title="Шаг 4" >
+<div class="prac">
+ <div class="prac-panel r left"><div class="timer ix" data-min="5">
+ <svg viewBox="0 0 200 200"><circle class="tb" cx="100" cy="100" r="88"/><circle class="tf" cx="100" cy="100" r="88"/></svg>
+ <div class="tv"><b>05:00</b><span>нажмите, чтобы начать</span></div>
+ <div class="tctl"><button class="tgo ix" type="button" aria-label="Старт или пауза"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button><button class="trs ix" type="button" aria-label="Сначала"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></div>
+</div><b>5 минут</b></div>
+ <div class="prac-text">
+  <div class="kick r"><b>18</b> · Практика</div>
+  <h2 class="h2 r"><span class="step-n">Шаг 4.</span> Спросите <span class="hl">другого</span> помощника</h2>
+  <p class="lead r" style="--d:.15">Вставьте ту же просьбу в другого помощника. Чей ответ вам больше нравится?</p><div class="r" style="--d:.3"><div class="opens"><a class="openb ix" href="https://chatgpt.com/" target="_blank" rel="noopener">Открыть ChatGPT <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="openb ix" href="https://gemini.google.com/" target="_blank" rel="noopener">Открыть Gemini <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a><a class="openb ix" href="https://www.meta.ai/" target="_blank" rel="noopener">Открыть Meta AI <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div></div>
+ </div>
+</div>
+<div class="sn"><p>Таймер: ▶ — старт и пауза, ↺ — сначала.</p></div>
+</section>
+<section class="slide " data-title="Обсуждение" >
+<div class="pad">
+ <div class="kick r"><b>19</b> · Обсуждаем</div>
+ <h2 class="h2 r">Расскажите, <span class="hl">что получилось</span></h2>
+ <ol class="disc"><li data-step="1"><i>1</i>Какое задание вы выбрали?</li><li data-step="2"><i>2</i>Стал ли ответ лучше после подробностей?</li><li data-step="3"><i>3</i>Каким помощником вы будете пользоваться?</li></ol>
+</div></section>
+<section class="slide " data-title="Главное" >
+<div class="pad">
+ <div class="kick r"><b>20</b> · Итоги</div>
+ <h2 class="h2 r">Запомните <span class="hl">5 правил</span></h2>
+ <div class="rules5"><div class="r5 r" style="--d:0.10"><i>1</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Пишите ИИ обычными словами.</span></div><div class="r5 r" style="--d:0.22"><i>2</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Добавляйте подробности.</span></div><div class="r5 r" style="--d:0.34"><i>3</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg><span>Не понравилось — попросите ещё раз.</span></div><div class="r5 r" style="--d:0.46"><i>4</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Проверяйте важное.</span></div><div class="r5 r" style="--d:0.58"><i>5</i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Не отправляйте личные данные.</span></div></div>
+ <div class="ask final" data-step="1"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17v.5"/></svg><b>Что вы попросите у ИИ сегодня дома?</b></div>
+</div></section>
+<div class="foot"><span>ИИ для начинающих · <b>Занятие 1</b></span><span id="counter">01 / 01</span></div>
+<div class="bar" id="bar"></div>
+<div class="wipe" id="wipe"></div>
+</div></div>
+<div class="notes" id="notes" hidden></div>
+<div class="help" id="help" hidden>
+ <div><b>→ / пробел</b>дальше</div><div><b>←</b>назад</div><div><b>F</b>полный экран</div><div><b>N</b>заметки преподавателя</div><div><b>B</b>чёрный экран</div><div><b>Home / End</b>начало / конец</div><div><b>H</b>эта подсказка</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="navbtns"><button id="prev" aria-label="Назад">‹</button><button id="next" aria-label="Дальше">›</button><button id="fs" aria-label="Полный экран">⛶</button></div>
+<div id="blank" style="position:fixed;inset:0;background:#000;z-index:90;display:none"></div>
+
+<script>
+(function(){
+  const stage=document.getElementById('stage'), slides=[...stage.querySelectorAll('.slide')];
+  const bar=document.getElementById('bar'), counter=document.getElementById('counter'), notes=document.getElementById('notes'), help=document.getElementById('help');
+  const wipe=document.getElementById('wipe'), toastEl=document.getElementById('toast'), blank=document.getElementById('blank');
+  const pad=n=>String(n).padStart(2,'0');
+  let cur=-1, busy=false;
+
+  function fit(){ const s=Math.min(innerWidth/1920, innerHeight/1080); stage.style.transform='translate(-50%,-50%) scale('+s+')'; }
+  function toast(m){ toastEl.textContent=m; toastEl.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>toastEl.classList.remove('show'),2400); }
+
+  /* шаги */
+  const maxStep=s=>Math.max(0,...[...s.querySelectorAll('[data-step]')].map(e=>+e.dataset.step));
+  function setStep(s,n){ s.dataset.cur=n; s.querySelectorAll('[data-step]').forEach(e=>e.classList.toggle('on',+e.dataset.step<=n)); }
+
+  /* видео */
+  const vid=document.getElementById('introVideo'), vcover=document.getElementById('vcover'), vnext=document.getElementById('vnext');
+  function playVideo(){ if(!vid.currentSrc&&!vid.src){ toast('Видео загружается, секунду…'); vid.dataset.want='1'; return; } vcover.classList.add('hide'); vid.controls=true; const p=vid.play(); if(p&&p.catch) p.catch(()=>toast('Не удалось запустить видео. Проверьте, что файл лежит в той же папке.')); }
+  document.getElementById('vplay').addEventListener('click',e=>{e.stopPropagation(); playVideo();});
+  vid.addEventListener('ended',()=>vnext.classList.add('show'));
+  (function loadEmbedded(){ const vd=document.getElementById('vdata'); if(!vd){ if(vid.dataset.src) vid.src=vid.dataset.src; return; }
+    fetch('data:video/mp4;base64,'+vd.textContent.trim()).then(r=>r.blob()).then(b=>{ vid.src=URL.createObjectURL(b); vd.remove(); if(vid.dataset.want){ vid.dataset.want=''; playVideo(); } })
+      .catch(()=>toast('Не удалось загрузить встроенное видео')); })();
+  vnext.addEventListener('click',e=>{e.stopPropagation(); go(cur+1);});
+
+  /* таймеры */
+  const timers=new Map();
+  document.querySelectorAll('.timer').forEach(t=>{
+    const total=+t.dataset.min*60, val=t.querySelector('b'), ring=t.querySelector('.tf'), lbl=t.querySelector('.tv span'), go=t.querySelector('.tgo');
+    const st={left:total,id:null};
+    const draw=()=>{ val.textContent=pad(Math.floor(st.left/60))+':'+pad(st.left%60); ring.style.strokeDashoffset=(553*(1-st.left/total)).toFixed(1); };
+    const icon=p=>go.innerHTML=p?'<svg class="ic" viewBox="0 0 24 24"><path d="M7 4h4v16H7zM14 4h4v16h-4z"/></svg>':'<svg class="ic" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>';
+    const stop=()=>{ clearInterval(st.id); st.id=null; icon(false); };
+    const start=()=>{ if(st.left<=0) return; const end=Date.now()+st.left*1000; lbl.textContent='осталось'; icon(true);
+      st.id=setInterval(()=>{ st.left=Math.max(0,Math.round((end-Date.now())/1000)); draw(); if(!st.left){ stop(); t.classList.add('done'); lbl.textContent='время вышло'; } },250); };
+    const toggle=()=>{ st.id?(stop(),lbl.textContent='пауза'):start(); };
+    const reset=()=>{ stop(); st.left=total; t.classList.remove('done'); lbl.textContent='нажмите, чтобы начать'; draw(); };
+    t.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('.trs')) reset(); else toggle(); });
+    timers.set(t,{stop,reset}); draw();
+  });
+
+  /* копирование */
+  function copyText(txt,btn){
+    const ok=()=>{ btn.classList.add('done'); const sp=btn.querySelector('span'); const old='Копировать'; sp.textContent='Скопировано'; setTimeout(()=>{btn.classList.remove('done'); sp.textContent=old;},1800); };
+    const fallback=()=>{ const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){ toast('Не удалось скопировать'); } ta.remove(); };
+    try{ navigator.clipboard.writeText(txt).then(ok,fallback); }catch(e){ fallback(); }
+  }
+  document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',e=>{ e.stopPropagation(); copyText(b.dataset.copy,b); }));
+
+  /* выбор */
+  document.querySelectorAll('.opt:not(.own)').forEach(o=>o.addEventListener('click',e=>{ e.stopPropagation(); o.parentElement.querySelectorAll('.opt').forEach(x=>x!==o&&x.classList.remove('picked')); o.classList.toggle('picked'); }));
+  document.querySelectorAll('.dly').forEach(o=>o.addEventListener('click',e=>{ e.stopPropagation(); o.classList.toggle('picked'); }));
+  document.querySelectorAll('.variant').forEach(o=>o.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('.copy')) return; o.parentElement.querySelectorAll('.variant').forEach(x=>x!==o&&x.classList.remove('picked')); o.classList.toggle('picked'); }));
+  document.querySelectorAll('.ix').forEach(el=>el.addEventListener('click',e=>e.stopPropagation()));
+
+  function render(n,back){
+    const prev=slides[cur];
+    stage.classList.toggle('back',!!back);
+    if(prev){ prev.classList.remove('active','in'); prev.classList.add('out'); setTimeout(()=>prev.classList.remove('out'),950);
+      if(prev.querySelector('video')){ vid.pause(); } prev.querySelectorAll('.timer').forEach(t=>timers.get(t).stop()); }
+    cur=n; const s=slides[n];
+    s.classList.remove('out'); s.classList.add('active'); setStep(s, back?maxStep(s):0);
+    void s.offsetWidth; requestAnimationFrame(()=>s.classList.add('in'));
+    stage.classList.toggle('nofoot', s.classList.contains('video-slide')||s.classList.contains('prac-slide'));
+    bar.style.width=((n+1)/slides.length*100)+'%';
+    counter.textContent=pad(n+1)+' / '+pad(slides.length);
+    const sn=s.querySelector('.sn'); notes.innerHTML='<h5>'+pad(n+1)+' · '+(s.dataset.title||'')+'</h5>'+(sn?sn.innerHTML:'<p>—</p>');
+    try{ history.replaceState(null,'','#'+(n+1)); }catch(e){}
+  }
+  function go(n){
+    n=Math.max(0,Math.min(slides.length-1,n)); if(n===cur||busy) return;
+    const back=n<cur;
+    if(slides[n].hasAttribute('data-wipe')&&!back&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+      busy=true; wipe.classList.remove('go'); void wipe.offsetWidth; wipe.classList.add('go');
+      setTimeout(()=>render(n,back),450); setTimeout(()=>{busy=false; wipe.classList.remove('go');},1000);
+    } else render(n,back);
+  }
+  function next(){ const s=slides[cur], st=+(s.dataset.cur||0); if(!busy&&st<maxStep(s)){ setStep(s,st+1); return; } go(cur+1); }
+  function prevS(){ const s=slides[cur], st=+(s.dataset.cur||0); if(!busy&&st>0){ setStep(s,st-1); return; } go(cur-1); }
+  function fullscreen(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>toast('Полный экран недоступен в этом окне')); else document.exitFullscreen(); }catch(e){ toast('Полный экран недоступен в этом окне'); } }
+
+  addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'){ if(e.key==='Escape') e.target.blur(); return; }
+    const k=e.key, onVideo=slides[cur].classList.contains('video-slide');
+    if(blank.style.display==='block'&&k!=='b'&&k!=='B'){ blank.style.display='none'; }
+    if(k===' '&&onVideo){ e.preventDefault(); if(vcover.classList.contains('hide')){ vid.paused?vid.play():vid.pause(); } else playVideo(); return; }
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(k)){ e.preventDefault(); next(); }
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){ e.preventDefault(); prevS(); }
+    else if(k==='Home'){ e.preventDefault(); go(0); } else if(k==='End'){ e.preventDefault(); go(slides.length-1); }
+    else if('fFаА'.includes(k)||k==='F5'){ e.preventDefault(); fullscreen(); }
+    else if('nNтТ'.includes(k)){ notes.hidden=!notes.hidden; }
+    else if('hHрР?'.includes(k)){ help.hidden=!help.hidden; }
+    else if('bBиИ.'.includes(k)){ blank.style.display=blank.style.display==='block'?'none':'block'; }
+  });
+  stage.addEventListener('click',e=>{ if(e.target.closest('.ix,a,button,input,video')) return; next(); });
+  blank.addEventListener('click',()=>blank.style.display='none');
+  document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();prevS();});
+  document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();next();});
+  document.getElementById('fs').addEventListener('click',e=>{e.stopPropagation();fullscreen();});
+  let tx=null;
+  addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  addEventListener('touchend',e=>{ if(tx===null) return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>60){ dx<0?next():prevS(); } tx=null; });
+  addEventListener('resize',fit); fit();
+  const h=parseInt((location.hash||'').slice(1),10);
+  render(h>0&&h<=slides.length?h-1:0,false);
+  setTimeout(()=>toast('→ дальше · F полный экран · N заметки · H подсказка'),800);
+})();
+</script>
+</body>
+</html>

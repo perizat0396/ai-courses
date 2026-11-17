@@ -8,8 +8,17 @@ const SLIDES_RE = /^::slides\s+(\/slides\/[\w.-]+\.html)\s*$/gm;
 
 function Md({ children }: { children: string }) {
   return (
-    <div className="prose prose-neutral max-w-none prose-headings:font-bold prose-a:decoration-brand prose-a:decoration-2 prose-blockquote:border-brand prose-blockquote:bg-brand-soft prose-blockquote:py-1 prose-blockquote:not-italic prose-img:rounded-2xl">
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ pre: ({ node: _n, ...p }) => <CopyPre {...p} /> }}>{children}</ReactMarkdown>
+    <div className="prose prose-neutral max-w-none prose-headings:font-bold prose-a:decoration-brand prose-a:decoration-2 prose-blockquote:border-brand prose-blockquote:bg-brand-soft prose-blockquote:py-1 prose-blockquote:not-italic prose-img:rounded-2xl prose-h2:clear-both">
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
+        pre: ({ node: _n, ...p }) => <CopyPre {...p} />,
+        // ![подпись](картинка.png "side") — иллюстрация сбоку от текста
+        img: ({ node: _n, title, alt, ...p }) =>
+          title === 'side'
+            // eslint-disable-next-line @next/next/no-img-element
+            ? <img {...p} alt={alt ?? ''} className="mx-auto !my-2 block w-60 rounded-none sm:float-right sm:ml-8 sm:w-64" />
+            // eslint-disable-next-line @next/next/no-img-element
+            : <img {...p} alt={alt ?? ''} title={title} />,
+      }}>{children}</ReactMarkdown>
     </div>
   );
 }

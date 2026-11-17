@@ -1,9 +1,18 @@
-export function Logo({ dark = true, name = 'AI Курсы' }: { dark?: boolean; name?: string }) {
+/** Логотип: жёлтое «облачко чата» с искрой ИИ на тёмной плитке (тот же знак — иконка вкладки, src/app/icon.svg). */
+export function LogoMark({ className = 'h-10 w-10' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <rect width="48" height="48" rx="13" fill="#111" />
+      <path d="M13 11.5h22a5.5 5.5 0 0 1 5.5 5.5v12a5.5 5.5 0 0 1-5.5 5.5H23.5l-7.5 6.5v-6.5H13A5.5 5.5 0 0 1 7.5 29V17A5.5 5.5 0 0 1 13 11.5z" fill="#FFC21A" />
+      <path d="M24 15.5c.7 4.3 2.4 6 6.7 6.7-4.3.7-6 2.4-6.7 6.7-.7-4.3-2.4-6-6.7-6.7 4.3-.7 6-2.4 6.7-6.7z" fill="#111" />
+    </svg>
+  );
+}
+
+export function Logo({ name = 'AI Курсы' }: { dark?: boolean; name?: string }) {
   return (
     <div className="flex items-center gap-2.5">
-      <div className={`grid h-10 w-10 rotate-45 place-items-center rounded-xl ${dark ? 'bg-ink' : 'bg-brand'}`}>
-        <span className={`-rotate-45 text-sm font-extrabold ${dark ? 'text-brand' : 'text-ink'}`}>AI</span>
-      </div>
+      <LogoMark />
       <span className="text-base font-bold tracking-tight">{name}</span>
     </div>
   );

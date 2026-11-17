@@ -6,7 +6,7 @@ import { getLang, pick } from '@/lib/i18n';
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  if (!aiEnabled()) return NextResponse.json({ error: 'ИИ-помощник не настроен' }, { status: 503 });
+  if (!aiEnabled()) return NextResponse.json({ error: 'ИИ-помощник не настроен / ЖИ-көмекші бапталмаған' }, { status: 503 });
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

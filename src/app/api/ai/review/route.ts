@@ -3,13 +3,14 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { aiEnabled, aiLimits, gemini, reviewPrompt } from '@/lib/gemini';
-import { getLang, pick } from '@/lib/i18n';
+import { getDict, getLang, pick } from '@/lib/i18n';
 
 export const maxDuration = 60;
 
 /** Предварительная проверка задания ИИ. Студент — свою работу, админ — любую. */
 export async function POST(req: Request) {
-  if (!aiEnabled()) return NextResponse.json({ error: 'ИИ не настроен' }, { status: 503 });
+  const { t } = await getDict();
+  if (!aiEnabled()) return NextResponse.json({ error: t.aiOff }, { status: 503 });
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
   if (sub.status === 'accepted' && sub.user_id === user.id) return NextResponse.json({ error: 'already accepted' }, { status: 400 });
 
   const { data: allowed } = await supabase.rpc('ai_take', { p_kind: 'review', p_limit: aiLimits.review });
-  if (!allowed) return NextResponse.json({ error: 'Лимит проверок ИИ на сегодня исчерпан' }, { status: 429 });
+  if (!allowed) return NextResponse.json({ error: t.aiReviewLimit }, { status: 429 });
 
   const admin = createAdminClient();
   const { data: lesson } = await admin.from('lessons').select('*, courses(title_ru,title_kk)').eq('id', sub.lesson_id).single();
@@ -49,6 +50,6 @@ export async function POST(req: Request) {
     revalidatePath('/', 'layout');
     return NextResponse.json({ text });
   } catch (e) {
-    return NextResponse.json({ error: 'ИИ временно недоступен', detail: (e as Error).message }, { status: 502 });
+    return NextResponse.json({ error: t.aiDown, detail: (e as Error).message }, { status: 502 });
   }
 }

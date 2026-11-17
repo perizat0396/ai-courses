@@ -66,10 +66,15 @@ const ru = {
   aiReviewNote: 'Это автоматическая подсказка. Итоговую оценку ставит преподаватель.',
   aiChecking: 'ИИ проверяет ответ…',
   aiRecheck: 'Проверить ИИ ещё раз',
+  roleAdmin: 'Администратор',
+  badLogin: 'Неверный email или пароль',
+  aiOff: 'ИИ не настроен',
+  aiReviewLimit: 'Лимит проверок ИИ на сегодня исчерпан',
+  aiDown: 'ИИ временно недоступен',
 };
 
 const kk: typeof ru = {
-  appName: 'AI Курстар',
+  appName: 'ЖИ курстары',
   hello: 'Сәлеметсіз бе',
   dashboard: 'Менің курстарым',
   profile: 'Профиль',
@@ -132,6 +137,11 @@ const kk: typeof ru = {
   aiReviewNote: 'Бұл автоматты кеңес. Қорытынды бағаны оқытушы қояды.',
   aiChecking: 'ЖИ жауапты тексеруде…',
   aiRecheck: 'ЖИ-ге қайта тексерту',
+  roleAdmin: 'Әкімші',
+  badLogin: 'Email немесе құпиясөз қате',
+  aiOff: 'ЖИ бапталмаған',
+  aiReviewLimit: 'Бүгінгі ЖИ тексеру лимиті таусылды',
+  aiDown: 'ЖИ уақытша қолжетімсіз',
 };
 
 export type Dict = typeof ru;

@@ -2,10 +2,12 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { getLang } from '@/lib/i18n';
 
-export const metadata: Metadata = {
-  title: 'AI Курсы',
-  description: 'Платформа курсов по искусственному интеллекту',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const kk = (await getLang()) === 'kk';
+  return kk
+    ? { title: 'ЖИ курстары', description: 'Жасанды интеллект бойынша курстар платформасы' }
+    : { title: 'AI Курсы', description: 'Платформа курсов по искусственному интеллекту' };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLang();

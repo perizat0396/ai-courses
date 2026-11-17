@@ -18,7 +18,7 @@ export async function AppShell({
     <div className="min-h-screen bg-white lg:flex">
       <aside className="border-b border-line bg-white px-4 py-4 lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:border-b-0 lg:border-r lg:px-8 lg:py-10">
         <div className="mb-4 flex items-center justify-between lg:mb-14">
-          <Link href="/"><Logo /></Link>
+          <Link href="/"><Logo name={t.appName} /></Link>
           <div className="lg:hidden"><LangSwitch lang={lang} /></div>
         </div>
         <NavLinks items={items} />
@@ -43,7 +43,7 @@ export async function AppShell({
             <div className="grid h-11 w-11 place-items-center rounded-full bg-brand text-sm font-bold">{initials || '?'}</div>
             <div className="leading-tight">
               <div className="text-sm font-bold">{name}</div>
-              <div className="text-xs text-ink-mute">{profile.role === 'admin' ? 'Администратор' : profile.email}</div>
+              <div className="text-xs text-ink-mute">{profile.role === 'admin' ? t.roleAdmin : profile.email}</div>
             </div>
           </Link>
         </header>

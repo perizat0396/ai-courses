@@ -22,7 +22,7 @@ export function AuthForm({ mode, t }: { mode: 'login' | 'register'; t: T }) {
     const supabase = createClient();
     if (mode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) { setError(error.message === 'Invalid login credentials' ? 'Неверный email или пароль' : error.message); setBusy(false); return; }
+      if (error) { setError(error.message === 'Invalid login credentials' ? t.badLogin : error.message); setBusy(false); return; }
       router.replace('/');
       router.refresh();
     } else {

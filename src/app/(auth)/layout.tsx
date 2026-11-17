@@ -7,7 +7,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-brand p-14 lg:flex lg:flex-col">
-        <Logo />
+        <Logo name={t.appName} />
         <div className="mt-auto max-w-md">
           <h1 className="text-5xl font-extrabold leading-[1.05]">{t.loginSub}</h1>
           <p className="mt-5 text-base font-medium text-ink/70">
@@ -21,7 +21,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       </div>
       <div className="flex flex-col p-6 md:p-14">
         <div className="flex items-center justify-between">
-          <div className="lg:invisible"><Logo /></div>
+          <div className="lg:invisible"><Logo name={t.appName} /></div>
           <LangSwitch lang={lang} />
         </div>
         <div className="mx-auto my-auto w-full max-w-sm py-10">{children}</div>

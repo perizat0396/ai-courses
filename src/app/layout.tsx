@@ -4,9 +4,10 @@ import { getLang } from '@/lib/i18n';
 
 export async function generateMetadata(): Promise<Metadata> {
   const kk = (await getLang()) === 'kk';
+  const icons = { icon: [{ url: '/icon.svg', type: 'image/svg+xml' }], apple: '/icon.svg' };
   return kk
-    ? { title: 'ЖИ курстары', description: 'Жасанды интеллект бойынша курстар платформасы' }
-    : { title: 'AI Курсы', description: 'Платформа курсов по искусственному интеллекту' };
+    ? { title: 'ЖИ курстары', description: 'Жасанды интеллект бойынша курстар платформасы', icons }
+    : { title: 'AI Курсы', description: 'Платформа курсов по искусственному интеллекту', icons };
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { courseByCode } from '@/lib/join';
 import { getDict } from '@/lib/i18n';
 
 // QR-ссылка на курс: новый человек → регистрация с кодом, вошедший → сразу доступ к курсу
@@ -8,8 +10,12 @@ export default async function Join({ params }: { params: Promise<{ code: string 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/register?code=${encodeURIComponent(code)}`);
-  const { data: courseId } = await supabase.rpc('join_course', { p_code: code });
-  if (courseId) redirect(`/courses/${courseId}`);
+  const admin = createAdminClient();
+  const courseId = await courseByCode(admin, code);
+  if (courseId) {
+    await admin.from('enrollments').upsert({ user_id: user.id, course_id: courseId });
+    redirect(`/courses/${courseId}`);
+  }
   const { t } = await getDict();
   return (
     <main className="mx-auto max-w-md p-10 text-center">

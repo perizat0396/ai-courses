@@ -52,16 +52,7 @@ export default async function AdminCourse({ params }: { params: Promise<{ id: st
             {L('Опубликован (видят студенты с доступом)', 'Жарияланды (қолжетімді студенттер көреді)')}
           </label>
           <button className="btn-dark ml-auto">{L('Сохранить', 'Сақтау')}</button>
-        </div>
-        <div className="md:col-span-2">
-          <label className="label">{L('Код для QR-регистрации (латиница, пусто — выключено)', 'QR-тіркелу коды (латынша, бос болса — өшірулі)')}</label>
-          <input name="join_code" defaultValue={course.join_code ?? ''} placeholder="kumis-ai" className="input max-w-xs" />
-          {course.join_code && (
-            <p className="mt-2 text-sm text-ink-soft">
-              {L('Ссылка для QR: по ней человек сам регистрируется и сразу получает доступ к курсу', 'QR сілтемесі: адам өзі тіркеліп, курсқа бірден қол жеткізеді')}:{' '}
-              <span className="font-mono font-semibold text-ink">{`https://ai-courses-one.vercel.app/join/${course.join_code}`}</span>
-            </p>
-          )}
+
         </div>
       </form>
 

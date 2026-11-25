@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { Dict } from '@/lib/i18n';
+import { registerNow } from '@/app/(auth)/register/actions';
 
 type T = Omit<Dict, 'youHaveCourses'>;
 
@@ -27,17 +28,10 @@ export function AuthForm({ mode, t, code = '' }: { mode: 'login' | 'register'; t
       router.replace(code ? after : '/');
       router.refresh();
     } else {
-      const { data, error } = await supabase.auth.signUp({
-        email, password,
-        options: {
-          data: { full_name: String(f.get('full_name')).trim(), ...(code ? { join_code: code } : {}) },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) { setError(error.message); setBusy(false); return; }
-      if (data.session) { router.replace(after); router.refresh(); return; }
-      setInfo(code ? t.registerDoneCode : t.registerDone);
-      setBusy(false);
+      f.set('code', code);
+      const r = await registerNow(f);
+      if (r.error) { setError(r.error); setBusy(false); return; }
+      router.replace(r.go ?? '/dashboard'); router.refresh();
     }
   }
 

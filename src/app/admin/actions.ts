@@ -27,7 +27,6 @@ export async function updateCourse(id: string, f: FormData) {
     title_ru: s(f, 'title_ru'), title_kk: s(f, 'title_kk'),
     description_ru: s(f, 'description_ru'), description_kk: s(f, 'description_kk'),
     theme: s(f, 'theme') || 'yellow', is_published: f.get('is_published') === 'on',
-    join_code: s(f, 'join_code').toLowerCase().replace(/[^a-z0-9-]/g, '') || null,
   }).eq('id', id);
   if (error) throw new Error(error.message);
   done();
@@ -203,5 +202,17 @@ export async function reviewSubmission(id: string, f: FormData) {
   const status = s(f, 'status');
   if (!['accepted', 'needs_work', 'submitted'].includes(status)) return;
   await supabase.from('submissions').update({ status, feedback: s(f, 'feedback'), reviewed_at: new Date().toISOString() }).eq('id', id);
+  done();
+}
+
+// ---------------- Удаление студента ----------------
+export async function deleteStudent(userId: string) {
+  const { supabase, user } = await requireAdmin();
+  if (userId === user.id) return;
+  const { data: p } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle();
+  if (!p || p.role === 'admin') return;
+  const admin = createAdminClient();
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  if (error) throw new Error(error.message);
   done();
 }

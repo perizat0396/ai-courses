@@ -3,6 +3,9 @@ import { requireAdmin } from '@/lib/auth';
 import { adminLang } from '@/lib/admin-lang';
 import { AccessToggle } from '@/components/admin/AccessToggle';
 import { CreateStudentForm } from '@/components/admin/CreateStudentForm';
+import { ConfirmButton } from '@/components/admin/Confirm';
+import { IconTrash } from '@/components/Icons';
+import { deleteStudent } from '../actions';
 
 export default async function AdminStudents({ searchParams }: { searchParams: Promise<{ q?: string; course?: string }> }) {
   const { q = '', course = '' } = await searchParams;
@@ -61,6 +64,12 @@ export default async function AdminStudents({ searchParams }: { searchParams: Pr
                   return <AccessToggle key={c.id} userId={s.id} courseId={c.id} on={on} label={on ? `${T(c)} · ${d}/${totals.get(c.id) ?? 0}` : T(c)} kk={kk} />;
                 })}
               </div>
+              <form action={deleteStudent.bind(null, s.id)}>
+                <ConfirmButton
+                  message={L(`Удалить студента ${s.full_name || s.email}? Аккаунт, доступы и прогресс будут удалены навсегда.`, `${s.full_name || s.email} студентін жою керек пе? Аккаунт, қолжетімділік пен прогресс біржола жойылады.`)}
+                  className="btn-ghost btn-sm text-red-600" title={L('Удалить студента', 'Студентті жою')}
+                ><IconTrash className="h-4 w-4" /></ConfirmButton>
+              </form>
             </div>
           ))}
         </div>

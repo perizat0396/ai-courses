@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLIC = ['/login', '/register', '/auth'];
+const PUBLIC = ['/login', '/register', '/auth', '/join'];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -31,7 +31,9 @@ export async function middleware(request: NextRequest) {
   }
   if (user && (path === '/login' || path === '/register')) {
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    const code = request.nextUrl.searchParams.get('code');
+    url.pathname = code ? `/join/${encodeURIComponent(code)}` : '/dashboard';
+    url.search = '';
     return NextResponse.redirect(url);
   }
   return response;

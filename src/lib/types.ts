@@ -1,6 +1,6 @@
 export type Course = {
   id: string; title_ru: string; title_kk: string; description_ru: string; description_kk: string;
-  theme: 'yellow' | 'black' | 'white'; is_published: boolean; position: number;
+  theme: 'yellow' | 'black' | 'white'; is_published: boolean; join_code?: string | null; position: number;
 };
 export type Module = { id: string; course_id: string; title_ru: string; title_kk: string; position: number };
 export type Lesson = {

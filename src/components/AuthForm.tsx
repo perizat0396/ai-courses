@@ -7,7 +7,8 @@ import type { Dict } from '@/lib/i18n';
 
 type T = Omit<Dict, 'youHaveCourses'>;
 
-export function AuthForm({ mode, t }: { mode: 'login' | 'register'; t: T }) {
+export function AuthForm({ mode, t, code = '' }: { mode: 'login' | 'register'; t: T; code?: string }) {
+  const after = code ? `/join/${encodeURIComponent(code)}` : '/dashboard';
   const router = useRouter();
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
@@ -23,19 +24,19 @@ export function AuthForm({ mode, t }: { mode: 'login' | 'register'; t: T }) {
     if (mode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) { setError(error.message === 'Invalid login credentials' ? t.badLogin : error.message); setBusy(false); return; }
-      router.replace('/');
+      router.replace(code ? after : '/');
       router.refresh();
     } else {
       const { data, error } = await supabase.auth.signUp({
         email, password,
         options: {
-          data: { full_name: String(f.get('full_name')).trim() },
+          data: { full_name: String(f.get('full_name')).trim(), ...(code ? { join_code: code } : {}) },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) { setError(error.message); setBusy(false); return; }
-      if (data.session) { router.replace('/dashboard'); router.refresh(); return; }
-      setInfo(t.registerDone);
+      if (data.session) { router.replace(after); router.refresh(); return; }
+      setInfo(code ? t.registerDoneCode : t.registerDone);
       setBusy(false);
     }
   }
@@ -43,6 +44,7 @@ export function AuthForm({ mode, t }: { mode: 'login' | 'register'; t: T }) {
   return (
     <div>
       <h2 className="h1">{mode === 'login' ? t.loginTitle : t.createAccount}</h2>
+      {code && mode === 'register' && <p className="mt-3 rounded-xl bg-brand-soft px-4 py-3 text-sm">{t.joinHint}</p>}
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         {mode === 'register' && (
           <div><label className="label">{t.fullName}</label><input name="full_name" required className="input" /></div>
@@ -55,7 +57,7 @@ export function AuthForm({ mode, t }: { mode: 'login' | 'register'; t: T }) {
       </form>
       <p className="mt-6 text-sm text-ink-soft">
         {mode === 'login' ? t.noAccount : t.haveAccount}{' '}
-        <Link href={mode === 'login' ? '/register' : '/login'} className="font-semibold text-ink underline decoration-brand decoration-2 underline-offset-4">
+        <Link href={(mode === 'login' ? '/register' : '/login') + (code ? `?code=${encodeURIComponent(code)}` : '')} className="font-semibold text-ink underline decoration-brand decoration-2 underline-offset-4">
           {mode === 'login' ? t.register : t.login}
         </Link>
       </p>

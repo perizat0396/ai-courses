@@ -27,6 +27,7 @@ export async function updateCourse(id: string, f: FormData) {
     title_ru: s(f, 'title_ru'), title_kk: s(f, 'title_kk'),
     description_ru: s(f, 'description_ru'), description_kk: s(f, 'description_kk'),
     theme: s(f, 'theme') || 'yellow', is_published: f.get('is_published') === 'on',
+    join_code: s(f, 'join_code').toLowerCase().replace(/[^a-z0-9-]/g, '') || null,
   }).eq('id', id);
   if (error) throw new Error(error.message);
   done();

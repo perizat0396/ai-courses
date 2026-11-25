@@ -4,6 +4,7 @@ import { requireUser } from '@/lib/auth';
 import { getDict, pick } from '@/lib/i18n';
 import { getCourseTree, getDoneSet, themeClasses } from '@/lib/courses';
 import { IconCheck, IconPlay } from '@/components/Icons';
+import { codeForCourse } from '@/lib/join';
 
 export default async function CoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,6 +18,8 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
   const th = themeClasses[course.theme] ?? themeClasses.white;
   const next = flat.find((l) => !done.has(l.id)) ?? flat[0];
   let n = 0;
+  const qr = codeForCourse(course.title_ru);
+  const kk = lang === 'kk';
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -31,6 +34,27 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
           {next && <Link href={`/lessons/${next.id}`} className={th.btn}><IconPlay className="h-4 w-4" />{d ? t.continue : t.start}</Link>}
         </div>
       </div>
+
+      {qr && (
+        <div className="card mt-6 flex flex-col items-center gap-6 p-6 sm:flex-row">
+          <a href={`/qr/${qr}.png`} target="_blank" rel="noopener noreferrer" className="shrink-0">
+            <img src={`/qr/${qr}.png`} alt="QR" className="h-44 w-44 rounded-xl border border-line bg-white p-2" />
+          </a>
+          <div className="flex-1 text-center sm:text-left">
+            <h2 className="text-xl font-bold">{kk ? 'Курсты телефоннан ашу' : 'Открыть курс на телефоне'}</h2>
+            <p className="mt-2 text-sm text-ink-soft">
+              {kk
+                ? 'Телефон камерасын QR-кодқа бағыттаңыз. Жаңа қатысушы аты-жөнін, email мен құпиясөзді енгізеді — курс бірден ашылады.'
+                : 'Наведите камеру телефона на QR-код. Новый участник вводит имя, email и пароль — курс открывается сразу.'}
+            </p>
+            <p className="mt-3 break-all font-mono text-sm font-semibold">ai-courses-one.vercel.app/join/{qr}</p>
+            <div className="mt-4 flex flex-wrap justify-center gap-3 sm:justify-start">
+              <a href={`/qr/${qr}.png`} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">{kk ? 'QR-ды үлкейту' : 'Увеличить QR'}</a>
+              <a href={`/qr/${qr}-a4.pdf`} download className="btn-ghost btn-sm">{kk ? 'Басып шығаруға (A4)' : 'Для печати (A4)'}</a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-10 space-y-8">
         {tree.map((m, mi) => (

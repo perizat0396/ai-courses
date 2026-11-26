@@ -15,7 +15,7 @@ export function Game({ src }: { src: string }) {
     const measure = () => {
     try {
       const d = ref.current?.contentDocument;
-      if (d) setH(Math.max(400, d.documentElement.scrollHeight));
+      if (d) setH(Math.max(400, d.body.scrollHeight));
     } catch {}
   };
   return () => window.removeEventListener('message', on);
@@ -23,7 +23,7 @@ export function Game({ src }: { src: string }) {
   const measure = () => {
     try {
       const d = ref.current?.contentDocument;
-      if (d) setH(Math.max(400, d.documentElement.scrollHeight));
+      if (d) setH(Math.max(400, d.body.scrollHeight));
     } catch {}
   };
   return (

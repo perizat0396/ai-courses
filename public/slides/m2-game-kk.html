@@ -185,7 +185,7 @@ new ResizeObserver(sendH).observe(document.body);addEventListener('load',()=>{se
 const stars3=n=>`<span class="stars3">${[0,1,2].map(k=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join('')}</span>`;
 function toast(n,el){const t=$('#toast');t.innerHTML=`${stars3(n)} ${esc(T.great)}`;const r=(el||document.body).getBoundingClientRect();t.style.top=(r.top+scrollY-54)+'px';t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1900)}
 function hero(){const p=Math.round(total()/max*100);return `<div class="hero">${ORN}<div class="eyebrow">${esc(T.eyebrow)}</div><h1>${esc(T.title)}</h1><div class="hrow"><span class="pill"><span class="st">${STAR}</span> <span id="sc">${total()} / ${max}</span></span><div class="prog" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div></div></div>`}
-function map(){.classList.remove('on');S.cur=null;save();let h=hero(),part='',first=L.findIndex((_,i)=>open(i)&&!done(i));
+function map(){document.getElementById('toast').classList.remove('on');S.cur=null;save();let h=hero(),part='',first=L.findIndex((_,i)=>open(i)&&!done(i));
  L.forEach((l,i)=>{if(l.part!==part){if(part)h+='</div>';part=l.part;h+=`<div class="sect">${esc(part)}</div><div class="route">`}
   const d=done(i),o=open(i),cls=(l.part===L[0].part?'th':'pr')+(d?' done':'')+(o?'':' lock')+(i===first?' now':'');
   h+=`<button class="node ${cls}" ${o?'':'disabled'} onclick="go(${i})"><span class="med">${ic(o?(d?'check':l.icon):'lock')}</span><span class="lab"><b>${i+1}. ${esc(l.title)}</b><small>${d?stars3(S.stars[l.id]):o?esc(T.start)+' '+ic('arrow'):esc(T.locked)}</small></span></button>`});
@@ -212,7 +212,7 @@ function screens(l){const out=[];let cur=null;
   if(!cur||b.t==='p'||b.t==='h'||(brk.has(b.t)&&!onlyIntro&&!(cur.length===1&&cur[0].t==='h'))){cur=[b];out.push(cur)}else cur.push(b)});
  if(l.quiz)out.push('quiz');return out}
 let STEP=0;
-function go(i,st){if(!open(i))return;.classList.remove('on');S.cur=i;save();const l=L[i],cls=l.part===L[0].part?'th':'pr',SC=screens(l);STEP=st==null?0:Math.max(0,Math.min(st,SC.length-1));const sc=SC[STEP],last=STEP===SC.length-1;S.step=STEP;save();
+function go(i,st){if(!open(i))return;document.getElementById('toast').classList.remove('on');S.cur=i;save();const l=L[i],cls=l.part===L[0].part?'th':'pr',SC=screens(l);STEP=st==null?0:Math.max(0,Math.min(st,SC.length-1));const sc=SC[STEP],last=STEP===SC.length-1;S.step=STEP;save();
  let h=`<div class="lvtop ${cls}">${ORN}<span class="big">${ic(l.icon)}</span><div><div class="eyebrow">${esc(T.level)} ${i+1} / ${L.length} · ${esc(l.part)}</div><h2>${esc(l.title)}</h2></div></div><div class="body">`;
  h+=`<div class="stepn">${esc(T.step)} ${STEP+1} / ${SC.length}</div><div class="dots">${SC.map((_,k)=>`<i class="${k===STEP?'on':k<STEP?'ok':''}"></i>`).join('')}</div>`;
  if(sc==='quiz')h+=`<div class="quiz"><div class="qh"><span class="q">${ic('help')}</span><span>${esc(l.quiz.q)}</span></div>${l.quiz.opts.map((o,k)=>`<button class="opt" onclick="ans(this,${i},${k})"><span class="k">${'ABC'[k]}</span><span>${esc(o)}</span></button>`).join('')}<div class="why" id="why" aria-live="polite"></div></div>`;

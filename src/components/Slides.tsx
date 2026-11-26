@@ -17,7 +17,7 @@ export function Slides({ src }: { src: string }) {
   return (
     <div className="not-prose space-y-3">
       <div className="aspect-video w-full overflow-hidden rounded-2xl bg-ink shadow-lg">
-        <iframe ref={ref} src={src} title={L.title} className="h-full w-full" allow="fullscreen; autoplay; clipboard-write" allowFullScreen />
+        <iframe ref={ref} src={`${src}?v=${process.env.NEXT_PUBLIC_BUILD ?? ''}`} title={L.title} className="h-full w-full" allow="fullscreen; autoplay; clipboard-write" allowFullScreen />
       </div>
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <button type="button" onClick={full} className="btn-brand">⛶ {L.full}</button>

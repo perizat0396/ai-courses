@@ -28,7 +28,7 @@ export function Game({ src }: { src: string }) {
   };
   return (
     <div className="not-prose -mx-2 sm:mx-0">
-      <iframe ref={ref} src={src} title="ChatGPT" style={{ height: h }} className="w-full scroll-mt-4 rounded-2xl border-0" allow="clipboard-write" onLoad={measure} />
+      <iframe ref={ref} src={`${src}?v=${process.env.NEXT_PUBLIC_BUILD ?? ''}`} title="ChatGPT" style={{ height: h }} className="w-full scroll-mt-4 rounded-2xl border-0" allow="clipboard-write" onLoad={measure} />
     </div>
   );
 }

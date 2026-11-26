@@ -108,7 +108,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const toast=(m,el)=>{const t=$('#toast');t.textContent=m;const r=(el||document.body).getBoundingClientRect();t.style.top=(r.top+scrollY-50)+'px';t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
 let ready=false;const up=()=>{if(!ready)return;try{parent.postMessage({aiGameTop:1},'*')}catch(e){}};
 const sendH=()=>{try{parent.postMessage({aiGameHeight:document.documentElement.scrollHeight},'*')}catch(e){}};
-new ResizeObserver(sendH).observe(document.body);
+new ResizeObserver(sendH).observe(document.body);addEventListener('load',()=>{sendH();setTimeout(sendH,500);setTimeout(sendH,1500)});
 function starStr(n){return '★'.repeat(n)+'☆'.repeat(3-n)}
 function header(){const p=Math.round(total()/max*100);return `<div class="top"><h1>${esc(T.title)}</h1><div class="stars">⭐ ${total()} / ${max}</div></div><div class="bar"><i style="width:${p}%"></i></div>`}
 function map(){S.cur=null;save();let h=header(),part='';

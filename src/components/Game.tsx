@@ -12,11 +12,23 @@ export function Game({ src }: { src: string }) {
       if (e.data.aiGameTop) ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
     window.addEventListener('message', on);
-    return () => window.removeEventListener('message', on);
+    const measure = () => {
+    try {
+      const d = ref.current?.contentDocument;
+      if (d) setH(Math.max(400, d.documentElement.scrollHeight));
+    } catch {}
+  };
+  return () => window.removeEventListener('message', on);
   }, []);
+  const measure = () => {
+    try {
+      const d = ref.current?.contentDocument;
+      if (d) setH(Math.max(400, d.documentElement.scrollHeight));
+    } catch {}
+  };
   return (
     <div className="not-prose -mx-2 sm:mx-0">
-      <iframe ref={ref} src={src} title="ChatGPT" style={{ height: h }} className="w-full scroll-mt-4 rounded-2xl border-0" allow="clipboard-write" />
+      <iframe ref={ref} src={src} title="ChatGPT" style={{ height: h }} className="w-full scroll-mt-4 rounded-2xl border-0" allow="clipboard-write" onLoad={measure} />
     </div>
   );
 }

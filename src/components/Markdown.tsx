@@ -2,9 +2,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyPre } from './CopyPre';
 import { Slides } from './Slides';
+import { Game } from './Game';
 
 /* Строка «::slides /slides/имя.html» в тексте урока встраивает HTML-презентацию. */
-const SLIDES_RE = /^::slides\s+(\/slides\/[\w.-]+\.html)\s*$/gm;
+const SLIDES_RE = /^::(slides|game)\s+(\/slides\/[\w.-]+\.html)\s*$/gm;
 
 function Md({ children }: { children: string }) {
   return (
@@ -24,17 +25,17 @@ function Md({ children }: { children: string }) {
 }
 
 export function Markdown({ children }: { children: string }) {
-  const parts: { kind: 'md' | 'slides'; value: string }[] = [];
+  const parts: { kind: 'md' | 'slides' | 'game'; value: string }[] = [];
   let last = 0;
   for (const m of children.matchAll(SLIDES_RE)) {
     if (m.index! > last) parts.push({ kind: 'md', value: children.slice(last, m.index) });
-    parts.push({ kind: 'slides', value: m[1] });
+    parts.push({ kind: m[1] as 'slides' | 'game', value: m[2] });
     last = m.index! + m[0].length;
   }
   if (last < children.length) parts.push({ kind: 'md', value: children.slice(last) });
   return (
     <div className="space-y-8">
-      {parts.map((p, i) => (p.kind === 'slides' ? <Slides key={i} src={p.value} /> : p.value.trim() ? <Md key={i}>{p.value}</Md> : null))}
+      {parts.map((p, i) => (p.kind === 'slides' ? <Slides key={i} src={p.value} /> : p.kind === 'game' ? <Game key={i} src={p.value} /> : p.value.trim() ? <Md key={i}>{p.value}</Md> : null))}
     </div>
   );
 }

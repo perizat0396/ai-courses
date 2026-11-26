@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Занятие 2: ChatGPT — микрокурс-игра</title>
+<style>
+:root{--ink:#14213D;--soft:#4A5568;--line:#DCE3EC;--bg:#F4F7FB;--blue:#2563EB;--teal:#0E9F8E;--purple:#7C3AED;--gold:#F5B301;--ok:#16A34A;--bad:#DC2626}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:19px;line-height:1.55}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:760px;margin:0 auto;padding:18px 14px 28px}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.top h1{font-size:24px;margin:0;flex:1;min-width:220px}
+.stars{background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;white-space:nowrap}
+.bar{height:12px;background:#E3E8F0;border-radius:99px;overflow:hidden;margin:4px 0 18px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--blue),var(--purple));border-radius:99px;transition:width .8s}
+.map{display:grid;gap:12px}
+.lv{display:flex;align-items:center;gap:14px;background:#fff;border:2px solid var(--line);border-radius:20px;padding:14px 16px;text-align:left;width:100%;transition:transform .2s,box-shadow .2s}
+.lv:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,33,61,.08)}
+.lv .ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:28px;flex-shrink:0;background:#EAF1FF}
+.lv.done .ic{background:#E6F7EF}
+.lv:disabled{opacity:.5;cursor:not-allowed}
+.lv .nm{flex:1}
+.lv .nm b{display:block;font-size:19px}
+.lv .nm small{color:var(--soft);font-size:15px}
+.lv .st{font-size:20px;letter-spacing:2px;white-space:nowrap}
+.part{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--purple);margin:10px 0 0}
+.card{background:#fff;border:2px solid var(--line);border-radius:22px;padding:20px 18px;animation:in .5s ease}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card h2{margin:0 0 4px;font-size:26px;line-height:1.25}
+.lvl{color:var(--teal);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.05em}
+.blk{margin:16px 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tile{background:var(--bg);border-radius:16px;padding:12px 14px}
+.tile .e{font-size:26px}
+.tile b{display:block}
+.tile span{color:var(--soft);font-size:16px}
+.warn{background:#FFF7E0;border-left:6px solid var(--gold);border-radius:12px;padding:12px 14px}
+.info{background:#E8F7F5;border-left:6px solid var(--teal);border-radius:12px;padding:12px 14px}
+ol.steps{padding-left:0;list-style:none;counter-reset:s;margin:0}
+ol.steps li{counter-increment:s;position:relative;padding:8px 0 8px 52px;min-height:44px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:4px;width:38px;height:38px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;display:grid;place-items:center}
+.shot{position:relative;margin:0 auto;border-radius:18px;overflow:hidden;border:2px solid var(--line);background:#111}
+.shot img{display:block;width:100%;height:auto}
+.spot{position:absolute;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:var(--gold);color:#111;font-weight:900;border:3px solid #fff;box-shadow:0 0 0 0 rgba(245,179,1,.7);animation:pulse 2s infinite;display:grid;place-items:center;font-size:18px;padding:0}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(245,179,1,.7)}70%{box-shadow:0 0 0 14px rgba(245,179,1,0)}100%{box-shadow:0 0 0 0 rgba(245,179,1,0)}}
+.spot.on{background:var(--purple);color:#fff;animation:none}
+.legend{display:grid;gap:8px;margin-top:10px}
+.legend button{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--bg);border:2px solid transparent;border-radius:14px;padding:8px 12px}
+.legend button.on{border-color:var(--purple);background:#F3EDFF}
+.legend i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--gold);font-weight:900;display:grid;place-items:center;flex-shrink:0}
+.cap{color:var(--soft);font-size:15px;text-align:center;margin-top:6px}
+.prompt{background:#F1F5FF;border:2px dashed #A9C1F5;border-radius:16px;padding:14px;white-space:pre-wrap}
+.copy{margin-top:10px;background:var(--blue);color:#fff;border:0;border-radius:12px;padding:10px 18px;font-weight:700}
+.copy.ok{background:var(--ok)}
+.dl{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;text-decoration:none;border-radius:14px;padding:12px 20px;font-weight:800}
+.task{display:flex;gap:12px;align-items:center;background:var(--bg);border:2px solid var(--line);border-radius:16px;padding:12px 14px;width:100%;text-align:left}
+.task .bx{width:32px;height:32px;border-radius:10px;border:3px solid var(--soft);flex-shrink:0;display:grid;place-items:center;font-weight:900;color:#fff}
+.task.on{border-color:var(--ok);background:#E6F7EF}
+.task.on .bx{background:var(--ok);border-color:var(--ok)}
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.flip{background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px;text-align:left;min-height:120px}
+.flip b{display:block;margin-bottom:6px}
+.flip .back{display:none;color:var(--soft);font-size:16px}
+.flip.on{background:#F3EDFF;border-color:var(--purple)}
+.flip.on .back{display:block}
+.flip .hint{font-size:14px;color:var(--purple);font-weight:700}
+.flip.on .hint{display:none}
+.quiz{margin-top:22px;background:linear-gradient(135deg,#EEF3FF,#F3EDFF);border-radius:20px;padding:18px}
+.quiz h3{margin:0 0 10px;font-size:20px}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.opt.ok{border-color:var(--ok);background:#E6F7EF}
+.opt.bad{border-color:var(--bad);background:#FDECEC;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.why{margin-top:8px;font-weight:600}
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{border:0;border-radius:14px;padding:14px 22px;font-weight:800;font-size:19px}
+.btn.main{background:var(--purple);color:#fff;flex:1}
+.btn.main:disabled{background:#C9CFDA;cursor:not-allowed}
+.btn.ghost{background:#fff;border:2px solid var(--line);color:var(--ink)}
+.need{color:var(--soft);font-size:15px;margin-top:8px}
+.final{text-align:center}
+.badge{width:170px;height:170px;margin:10px auto;border-radius:50%;background:conic-gradient(var(--teal),var(--blue),var(--purple),var(--teal));display:grid;place-items:center;animation:pop .8s ease}
+.badge div{width:140px;height:140px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:60px}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.toast{position:absolute;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:14px;padding:12px 20px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+@media (max-width:520px){html,body{font-size:18px}.card{padding:16px 14px}.card h2{font-size:23px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+<script id="data" type="application/json">{"lang": "ru", "ui": {"title": "Занятие 2: ChatGPT — микрокурс-игра", "done": "Пройдено", "start": "Начать", "locked": "Сначала пройдите предыдущий уровень", "level": "Уровень", "map": "Карта", "next": "Следующий уровень", "toFinal": "К финишу", "copy": "Копировать", "copied": "Скопировано", "flip": "Нажмите — что внутри?", "great": "Отлично!", "tryAgain": "Попробуйте ещё раз — у вас обязательно получится!", "needQuiz": "Чтобы перейти дальше, ответьте на вопрос.", "needTasks": "Чтобы перейти дальше, отметьте все задания.", "finalTitle": "Поздравляем! Вы освоили ChatGPT", "finalLocked": "Откроется после всех уровней", "finalText": "Вы собрали {s} / {m} звёзд. Теперь вы умеете менять картинки, создавать открытки и работать с документами в ChatGPT.", "homework": "<b>Домашнее задание:<\/b> создайте пригласительную открытку. Текст задания и поле для ответа — внизу этой страницы.", "reset": "Начать заново", "resetQ": "Все звёзды сбросятся. Начать заново?"}, "levels": [{"id": "what", "part": "Теория", "icon": "🤖", "title": "Что такое ChatGPT?", "blocks": [{"t": "p", "h": "<b>ChatGPT<\/b> — помощник с искусственным интеллектом. Как Meta AI из прошлого занятия, только в отдельном приложении и с большими возможностями. Вы пишете или говорите обычными словами — он отвечает."}, {"t": "tiles", "items": [["💌", "Поздравление", "«Напиши поздравление сестре с 60-летием»"], ["🖼️", "Картинка", "«Нарисуй открытку к Наурызу»"], ["📄", "Документ", "Прикрепить файл: «Кратко перескажи»"], ["🍲", "Меню", "«Что приготовить из картошки и курицы?»"], ["🌐", "Перевод", "«Переведи на казахский: …»"], ["💡", "Объяснение", "«Объясни это объявление простыми словами»"]]}, {"t": "info", "h": "ChatGPT <b>бесплатный<\/b>, работает на телефоне и компьютере, понимает казахский и русский."}, {"t": "warn", "h": "⚠️ ChatGPT может ошибаться. Даты, цифры и адреса всегда проверяйте. Решение принимаете вы."}], "quiz": {"q": "Может ли ChatGPT ошибаться?", "opts": ["Нет, никогда", "Да, поэтому важные ответы проверяем", "Только ночью"], "ok": 1, "why": "Верно! ChatGPT — помощник, а последнее слово всегда за человеком."}}, {"id": "install", "part": "Теория", "icon": "📲", "title": "Установка приложения", "blocks": [{"t": "shot", "src": "/lessons/m2/shots/play.jpg", "max": 380, "cap": "Страница ChatGPT в Play Маркете", "spots": [[54, 13.6, "Под названием должно быть написано <b>OpenAI<\/b> — только это настоящее приложение"], [93, 53.3, "Нажмите <b>«Установить»<\/b>"]]}, {"t": "steps", "items": ["<b>Android<\/b> — откройте Play Маркет, <b>iPhone<\/b> — App Store.", "В поиске напишите <b>ChatGPT<\/b>.", "Выберите приложение, где написано <b>OpenAI<\/b>.", "Нажмите «Установить» (на iPhone — «Загрузить») и откройте приложение."]}, {"t": "warn", "h": "⚠️ В магазине есть подделки с похожими названиями, которые сразу просят деньги. Настоящий ChatGPT — от OpenAI и бесплатный."}], "quiz": {"q": "Что написано под названием настоящего приложения ChatGPT?", "opts": ["AI Chat Bot Pro", "OpenAI", "Free GPT 2026"], "ok": 1, "why": "Да! OpenAI — компания, которая создала ChatGPT."}}, {"id": "signup", "part": "Теория", "icon": "🔑", "title": "Регистрация", "blocks": [{"t": "shot", "src": "/lessons/m2/shots/login_c.jpg", "max": 340, "cap": "Окно входа в ChatGPT", "spots": [[93, 47, "<b>Через Google<\/b> — самый простой путь для телефонов Android"], [93, 56.6, "<b>Через Apple<\/b> — для iPhone"], [93, 66.3, "<b>По номеру телефона<\/b> — придёт код в SMS"], [93, 82.7, "<b>Email<\/b> — вводите почту, придумываете пароль, на почту придёт код"]]}, {"t": "steps", "items": ["Нажмите <b>«Продолжить с Google»<\/b> (на iPhone — с Apple).", "Выберите свою почту из списка.", "Если попросит — укажите имя и дату рождения.", "Предложат купить Plus — <b>закройте крестиком<\/b>. Бесплатной версии достаточно."]}, {"t": "info", "h": "💻 На компьютере: откройте в браузере <b>chatgpt.com<\/b>, нажмите «Войти» и выберите тот же способ, что на телефоне. Все разговоры видны на обоих устройствах."}, {"t": "warn", "h": "🔒 Код из письма или SMS никому не сообщайте. Данные карты не вводите."}], "quiz": {"q": "После регистрации предлагают купить подписку Plus. Что делаем?", "opts": ["Вводим номер карты", "Закрываем крестиком — бесплатной версии хватает", "Удаляем приложение"], "ok": 1, "why": "Верно! Для курса бесплатной версии полностью достаточно."}}, {"id": "screen", "part": "Теория", "icon": "🧭", "title": "Знакомство с экраном", "blocks": [{"t": "p", "h": "Нажимайте на жёлтые номера — узнаете, для чего каждая кнопка."}, {"t": "shot", "src": "/lessons/m2/shots/home.jpg", "max": 360, "cap": "Главный экран ChatGPT", "spots": [[10, 13, "<b>Меню<\/b> — все прошлые разговоры и «Новый чат»"], [86.4, 13, "<b>Войти<\/b> — вход в аккаунт"], [8.3, 71, "<b>«+»<\/b> — прикрепить фото, картинку или документ"], [40, 71, "<b>Поле ввода<\/b> — сюда пишем просьбу"], [76.8, 71, "<b>Микрофон<\/b> — сказать вопрос голосом, он превратится в текст"], [91, 86, "<b>Голосовой режим<\/b> — разговаривать с ChatGPT, как по телефону"]]}], "quiz": {"q": "Как прикрепить документ или фото?", "opts": ["Через микрофон", "Кнопкой «+»", "Кнопкой «Войти»"], "ok": 1, "why": "Да! «+» — кнопка для файлов, фото и картинок."}}, {"id": "first", "part": "Теория", "icon": "💬", "title": "Первый разговор", "blocks": [{"t": "p", "h": "Откройте ChatGPT, скопируйте и отправьте:"}, {"t": "prompt", "text": "Здравствуй! Я только начинаю пользоваться тобой. Расскажи простыми словами в трёх пунктах, чем ты можешь мне помочь."}, {"t": "task", "id": "f1", "label": "Отправил(а), получил(а) ответ"}, {"t": "p", "h": "Теперь нажмите 🎤 микрофон и скажите голосом: <b>«Посоветуй лёгкую утреннюю зарядку на 10 минут»<\/b>."}, {"t": "task", "id": "f2", "label": "Спросил(а) голосом"}, {"t": "p", "h": "Ответ не понравился? Не начинайте сначала — попросите исправить в том же чате:"}, {"t": "prompt", "text": "Сделай короче и проще, только упражнения сидя."}, {"t": "task", "id": "f3", "label": "Попросил(а) исправить ответ"}]}, {"id": "hacks", "part": "Теория", "icon": "✨", "title": "Лайфхаки", "blocks": [{"t": "p", "h": "Нажимайте на карточки — секреты хорошего результата:"}, {"t": "flips", "items": [["🖼️ Дайте образец (референс)", "Прикрепите через «+» картинку, которая нравится: «Сделай в таком же стиле, но к Наурызу»."], ["👥 Для кого и где?", "«…для группы в WhatsApp», «…для печати на листе A4»."], ["🎭 Дайте роль", "«Ты — опытный дизайнер открыток»."], ["📏 Формат", "«В пяти пунктах», «не больше 50 слов», «вертикальный формат»."], ["✍️ Текст — в кавычках", "«Напиши точно так: «С днём рождения!»». Короткая надпись — меньше ошибок."], ["🚫 Что НЕ менять", "«Остальной дизайн не изменяй»."], ["1️⃣ Одно изменение за раз", "Сначала «поменяй цвет», потом «добавь коробку»."], ["🔢 Попросите варианты", "«Предложи 3 варианта, я выберу»."], ["❔ Пусть задаст вопросы", "«Прежде чем делать, задай мне 3 уточняющих вопроса»."], ["🆕 Новая тема — новый чат", "Старый разговор мешает новому заданию."]]}, {"t": "h", "h": "📌 Где найти образцы"}, {"t": "p", "h": "<b><a href=\"https://pinterest.com\" target=\"_blank\" rel=\"noopener\">Pinterest<\/a><\/b> — идеи открыток и орнаментов · <b><a href=\"https://canva.com\" target=\"_blank\" rel=\"noopener\">Canva<\/a><\/b> — готовые шаблоны · <b><a href=\"https://unsplash.com\" target=\"_blank\" rel=\"noopener\">Unsplash<\/a><\/b>, <b><a href=\"https://pexels.com\" target=\"_blank\" rel=\"noopener\">Pexels<\/a><\/b> — бесплатные фото для свободного использования."}, {"t": "info", "h": "Картинку из Pinterest берём только как пример стиля: «Возьми только цвета и стиль, рисунок и текст сделай свои»."}], "quiz": {"q": "Какая просьба даст лучший результат?", "opts": ["«Сделай открытку»", "«Ты — дизайнер. Сделай вертикальную открытку ко дню рождения, в центре крупно напиши «С днём рождения!», для отправки в WhatsApp»"], "ok": 1, "why": "Верно! Для кого, в каком формате, с каким текстом — чем точнее, тем лучше."}}, {"id": "safe", "part": "Теория", "icon": "🛡️", "title": "Безопасность", "blocks": [{"t": "tiles", "items": [["🪪", "Нельзя", "Паспорт, ИИН, номера документов"], ["💳", "Нельзя", "Номер карты, коды из SMS, пароли"], ["🩺", "Нельзя", "Медицинские заключения"], ["👨‍👩‍👧", "Нельзя", "Фото и данные других людей без согласия"]]}, {"t": "steps", "items": ["Совпадают ли даты, время и адрес с оригиналом?", "Нет ли того, чего не было в документе?", "Правильно ли написаны надписи на картинке?"]}, {"t": "info", "h": "ChatGPT — помощник, а не начальник. Он предлагает, а решаем мы."}], "quiz": {"q": "Что можно загрузить в ChatGPT?", "opts": ["Фото паспорта", "Фото банковской карты", "Объявление о концерте со стенда"], "ok": 2, "why": "Верно! Объявление без личных данных — безопасно."}}, {"id": "p1", "part": "Практика", "icon": "🎨", "title": "Меняем картинку", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Откройте картинку и сохраните в телефон (нажмите и удерживайте — «Сохранить»)."}, {"t": "dl", "href": "/lessons/m2/stol_cvety.png", "label": "Открыть картинку со столом"}, {"t": "steps", "items": ["В ChatGPT нажмите <b>«+»<\/b> → «Фото» → выберите сохранённую картинку.", "Скопируйте промпт и отправьте."]}, {"t": "prompt", "text": "Измени это изображение: поменяй цвет цветов с красного на жёлтый, добавь на стол небольшую подарочную коробку и сделай фон праздничным. Сохрани основную композицию изображения."}, {"t": "task", "id": "p1a", "label": "Изменил(а) картинку"}, {"t": "prompt", "text": "Сделай изображение более светлым, используй тёплые цвета и улучши его качество."}, {"t": "task", "id": "p1b", "label": "Попросил(а) улучшить"}, {"t": "info", "h": "🤔 У всех получилось одинаково? Нет — ИИ каждый раз рисует немного по-своему. Если нужное изменение не выполнено — уточните запрос."}, {"t": "p", "h": "<b>Б. Своё задание.<\/b> Сфотографируйте что-то рядом с собой и замените слова в скобках:"}, {"t": "prompt", "text": "Измени это изображение: [что поменять], [что добавить], [какой сделать фон]. Сохрани основную композицию."}, {"t": "task", "id": "p1c", "label": "Изменил(а) своё фото"}]}, {"id": "p2", "part": "Практика", "icon": "💐", "title": "Создаём открытку", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Нажмите «Новый чат» и отправьте:"}, {"t": "prompt", "text": "Создай красивую поздравительную открытку ко дню рождения. Добавь цветы, подарочную коробку и лёгкие золотистые узоры. В центре крупными и хорошо читаемыми буквами напиши: «С днём рождения!». Дизайн должен быть тёплым, элегантным и предназначенным для взрослого человека. Сделай открытку в вертикальном формате."}, {"t": "task", "id": "p2a", "label": "Открытка готова"}, {"t": "prompt", "text": "Добавь в нижней части открытки надпись: «С уважением, ваши коллеги». Остальной дизайн не изменяй."}, {"t": "warn", "h": "✍️ Проверьте надпись! ИИ часто ошибается в буквах, особенно в казахских. Если есть ошибка:"}, {"t": "prompt", "text": "Не изменяй дизайн открытки. Исправь надпись и напиши её точно так: «С днём рождения!»"}, {"t": "task", "id": "p2b", "label": "Проверил(а) надпись"}, {"t": "p", "h": "<b>Б. Своя открытка:<\/b> юбилей, Наурыз, новоселье, День учителя. Замените слова в скобках:"}, {"t": "prompt", "text": "Создай красивую поздравительную открытку [к юбилею]. Добавь [что нарисовать]. В центре крупно напиши: «[ваш текст]». Дизайн тёплый и элегантный, для взрослого человека, вертикальный формат."}, {"t": "task", "id": "p2c", "label": "Создал(а) свою открытку и сохранил(а) в телефон"}]}, {"id": "p3", "part": "Практика", "icon": "📄", "title": "Работа с документом", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Скачайте документ:"}, {"t": "dl", "href": "/lessons/m2/Plan_meropriyatiy_RU.docx", "dl": true, "label": "Скачать план мероприятий", "note": "Файл попадёт в папку «Загрузки» телефона"}, {"t": "steps", "items": ["«Новый чат» → <b>«+»<\/b> → «Файлы» → выберите документ.", "Отправляйте промпты по очереди."]}, {"t": "prompt", "text": "Прочитай прикреплённый документ. Простыми словами изложи его основное содержание в пяти пунктах. Отдельно укажи важные даты, время и место проведения."}, {"t": "task", "id": "p3a", "label": "Получил(а) пересказ"}, {"t": "prompt", "text": "На основе этого документа подготовь короткое и понятное сообщение для отправки в группу WhatsApp."}, {"t": "prompt", "text": "Представь информацию из документа в виде таблицы с двумя столбцами: «Важная информация» и «Что необходимо сделать»."}, {"t": "task", "id": "p3b", "label": "Получил(а) сообщение и таблицу"}, {"t": "warn", "h": "🔍 Сверьте с документом: дата, время, место верны? Если сомневаетесь: «Ответь только на основе прикреплённого документа. Если информации нет, напиши: «В документе этого нет»»."}, {"t": "p", "h": "<b>Б. Своё задание.<\/b> Сфотографируйте текст без личных данных (объявление, инструкцию, рецепт) и прикрепите через «+»:"}, {"t": "prompt", "text": "Прочитай текст на фотографии и объясни простыми словами в трёх пунктах, что здесь написано и что мне нужно сделать."}, {"t": "task", "id": "p3c", "label": "Разобрал(а) свой текст"}]}]}</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent), T=D.ui, L=D.levels;
+const KEY='ai-m2-game-'+D.lang;
+let S={stars:{},tasks:{},cur:null};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s), app=$('#app');
+const total=()=>Object.values(S.stars).reduce((a,b)=>a+b,0), max=L.length*3;
+const done=i=>S.stars[L[i].id]!=null;
+const open=i=>i===0||done(i-1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=(m,el)=>{const t=$('#toast');t.textContent=m;const r=(el||document.body).getBoundingClientRect();t.style.top=(r.top+scrollY-50)+'px';t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
+let ready=false;const up=()=>{if(!ready)return;try{parent.postMessage({aiGameTop:1},'*')}catch(e){}};
+const sendH=()=>{try{parent.postMessage({aiGameHeight:document.documentElement.scrollHeight},'*')}catch(e){}};
+new ResizeObserver(sendH).observe(document.body);
+function starStr(n){return '★'.repeat(n)+'☆'.repeat(3-n)}
+function header(){const p=Math.round(total()/max*100);return `<div class="top"><h1>${esc(T.title)}</h1><div class="stars">⭐ ${total()} / ${max}</div></div><div class="bar"><i style="width:${p}%"></i></div>`}
+function map(){S.cur=null;save();let h=header(),part='';
+ L.forEach((l,i)=>{if(l.part!==part){part=l.part;h+=`<div class="part">${esc(part)}</div>`}
+  const d=done(i),o=open(i);
+  h+=`<button class="lv ${d?'done':''}" ${o?'':'disabled'} onclick="go(${i})"><span class="ic">${o?l.icon:'🔒'}</span><span class="nm"><b>${i+1}. ${esc(l.title)}</b><small>${d?T.done:o?T.start:T.locked}</small></span><span class="st">${d?starStr(S.stars[l.id]):''}</span></button>`});
+ const fin=L.every((_,i)=>done(i));
+ h+=`<div class="part">🏁</div><button class="lv ${fin?'done':''}" ${fin?'':'disabled'} onclick="final()"><span class="ic">${fin?'🏅':'🔒'}</span><span class="nm"><b>${esc(T.finalTitle)}</b><small>${fin?T.start:T.finalLocked}</small></span></button>`;
+ app.innerHTML=`<div class="map">${h}</div>`;scrollTo(0,0);up();sendH()}
+function blk(b,li){switch(b.t){
+ case 'p':return `<div class="blk">${b.h}</div>`;
+ case 'warn':return `<div class="blk warn">${b.h}</div>`;
+ case 'info':return `<div class="blk info">${b.h}</div>`;
+ case 'tiles':return `<div class="blk tiles">${b.items.map(x=>`<div class="tile"><div class="e">${x[0]}</div><b>${x[1]}</b><span>${x[2]}</span></div>`).join('')}</div>`;
+ case 'steps':return `<div class="blk"><ol class="steps">${b.items.map(x=>`<li>${x}</li>`).join('')}</ol></div>`;
+ case 'shot':{const id='s'+Math.random().toString(36).slice(2,7);
+  return `<div class="blk"><div class="shot" id="${id}" style="max-width:${b.max||360}px"><img src="${b.src}" alt="${esc(b.alt||'')}">${b.spots.map((s,k)=>`<button class="spot" style="left:${s[0]}%;top:${s[1]}%" onclick="spot('${id}',${k})">${k+1}</button>`).join('')}</div><div class="cap">${esc(b.cap||'')}</div><div class="legend" id="${id}L">${b.spots.map((s,k)=>`<button onclick="spot('${id}',${k})"><i>${k+1}</i><span>${s[2]}</span></button>`).join('')}</div></div>`}
+ case 'prompt':return `<div class="blk"><div class="prompt">${esc(b.text)}</div><button class="copy" onclick="cp(this)" data-t="${esc(b.text)}">📋 ${T.copy}</button></div>`;
+ case 'dl':return `<div class="blk"><a class="dl" href="${b.href}" ${b.dl?'download':''} target="_blank" rel="noopener">⬇️ ${esc(b.label)}</a>${b.note?`<div class="need">${esc(b.note)}</div>`:''}</div>`;
+ case 'task':{const on=S.tasks[b.id];return `<div class="blk"><button class="task ${on?'on':''}" onclick="tk(this,'${b.id}',${li})"><span class="bx">${on?'✓':''}</span><span>${b.label}</span></button></div>`}
+ case 'flips':return `<div class="blk flips">${b.items.map(x=>`<button class="flip" onclick="this.classList.toggle('on');sendH()"><b>${x[0]}</b><span class="hint">${T.flip}</span><span class="back">${x[1]}</span></button>`).join('')}</div>`;
+ case 'h':return `<h3 style="margin:22px 0 6px;font-size:21px">${b.h}</h3>`;
+ }return ''}
+function go(i){if(!open(i))return;S.cur=i;save();const l=L[i];
+ let h=`<div class="card"><div class="lvl">${T.level} ${i+1} / ${L.length} · ${esc(l.part)}</div><h2>${l.icon} ${esc(l.title)}</h2>`;
+ h+=l.blocks.map(b=>blk(b,i)).join('');
+ if(l.quiz){h+=`<div class="quiz"><h3>❓ ${esc(l.quiz.q)}</h3>${l.quiz.opts.map((o,k)=>`<button class="opt" onclick="ans(this,${i},${k})">${esc(o)}</button>`).join('')}<div class="why" id="why"></div></div>`}
+ h+=`<div class="nav"><button class="btn ghost" onclick="map()">🗺️ ${T.map}</button><button class="btn main" id="nx" onclick="next(${i})" ${done(i)?'':'disabled'}>${i===L.length-1?T.toFinal:T.next} →</button></div>`;
+ h+=`<div class="need" id="need">${done(i)?'':(l.quiz?T.needQuiz:T.needTasks)}</div></div>`;
+ app.innerHTML=header()+h;window.tries=0;scrollTo(0,0);up();sendH()}
+function spot(id,k){document.querySelectorAll('#'+id+' .spot').forEach((s,j)=>s.classList.toggle('on',j===k));document.querySelectorAll('#'+id+'L button').forEach((s,j)=>s.classList.toggle('on',j===k))}
+function cp(b){const t=b.dataset.t;const okf=()=>{b.classList.add('ok');b.textContent='✅ '+T.copied;setTimeout(()=>{b.classList.remove('ok');b.textContent='📋 '+T.copy},1800)};
+ if(navigator.clipboard&&isSecureContext){navigator.clipboard.writeText(t).then(okf,()=>fb())}else fb();
+ function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');okf()}catch(e){}a.remove()}}
+function tk(b,id,i){S.tasks[id]=!S.tasks[id];b.classList.toggle('on',!!S.tasks[id]);b.querySelector('.bx').textContent=S.tasks[id]?'✓':'';
+ const l=L[i],ids=l.blocks.filter(x=>x.t==='task').map(x=>x.id),n=ids.filter(x=>S.tasks[x]).length;
+ if(!l.quiz){if(n===ids.length){if(S.stars[l.id]==null)toast('⭐⭐⭐ '+T.great,b);S.stars[l.id]=3;$('#nx').disabled=false;$('#need').textContent=''}else{delete S.stars[l.id];$('#nx').disabled=true;$('#need').textContent=T.needTasks}}
+ save();const st=document.querySelector('.stars');if(st)st.textContent='⭐ '+total()+' / '+max}
+function ans(b,i,k){const l=L[i],q=l.quiz;if(document.querySelector('.opt.ok'))return;
+ if(k===q.ok){b.classList.add('ok');const s=Math.max(1,3-window.tries);if(S.stars[l.id]==null||S.stars[l.id]<s)S.stars[l.id]=s;save();
+  $('#why').innerHTML='✅ '+esc(q.why);$('#nx').disabled=false;$('#need').textContent='';toast(starStr(S.stars[l.id])+' '+T.great,b);document.querySelector('.stars').textContent='⭐ '+total()+' / '+max}
+ else{window.tries++;b.classList.add('bad');$('#why').innerHTML='🙂 '+esc(T.tryAgain);setTimeout(()=>b.classList.remove('bad'),600)}sendH()}
+function next(i){if(i<L.length-1)go(i+1);else final()}
+function final(){if(!L.every((_,i)=>done(i)))return map();
+ app.innerHTML=header()+`<div class="card final"><div class="badge"><div>🏅</div></div><h2>${esc(T.finalTitle)}</h2><p>${T.finalText.replace('{s}',total()).replace('{m}',max)}</p><div class="info" style="text-align:left">${T.homework}</div><div class="nav"><button class="btn ghost" onclick="map()">🗺️ ${T.map}</button><button class="btn ghost" onclick="if(confirm('${esc(T.resetQ)}')){S={stars:{},tasks:{},cur:null};save();map()}">↺ ${T.reset}</button></div></div>`;scrollTo(0,0);up();sendH()}
+if(S.cur!=null&&open(S.cur))go(S.cur);else map();ready=true;
+</script>
+</body>
+</html>

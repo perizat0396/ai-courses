@@ -4,156 +4,232 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Занятие 2: ChatGPT — микрокурс-игра</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#14213D;--soft:#4A5568;--line:#DCE3EC;--bg:#F4F7FB;--blue:#2563EB;--teal:#0E9F8E;--purple:#7C3AED;--gold:#F5B301;--ok:#16A34A;--bad:#DC2626}
+:root{--ink:#1B2350;--soft:#56607F;--line:#E1E6F0;--bg:#F3F5FA;--paper:#fff;--teal:#0EA5A0;--blue:#3657E8;--violet:#7B61FF;--gold:#E9A824;--goldl:#FFF4D6;--ok:#12A15E;--bad:#E0473B;
+ --disp:"Unbounded",system-ui,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--r:22px;--sh:0 1px 2px rgba(27,35,80,.06),0 8px 24px rgba(27,35,80,.07)}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:19px;line-height:1.55}
-button{font:inherit;cursor:pointer}
-.wrap{max-width:760px;margin:0 auto;padding:18px 14px 28px}
-.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-.top h1{font-size:24px;margin:0;flex:1;min-width:220px}
-.stars{background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;white-space:nowrap}
-.bar{height:12px;background:#E3E8F0;border-radius:99px;overflow:hidden;margin:4px 0 18px}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--blue),var(--purple));border-radius:99px;transition:width .8s}
-.map{display:grid;gap:12px}
-.lv{display:flex;align-items:center;gap:14px;background:#fff;border:2px solid var(--line);border-radius:20px;padding:14px 16px;text-align:left;width:100%;transition:transform .2s,box-shadow .2s}
-.lv:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,33,61,.08)}
-.lv .ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:28px;flex-shrink:0;background:#EAF1FF}
-.lv.done .ic{background:#E6F7EF}
-.lv:disabled{opacity:.5;cursor:not-allowed}
-.lv .nm{flex:1}
-.lv .nm b{display:block;font-size:19px}
-.lv .nm small{color:var(--soft);font-size:15px}
-.lv .st{font-size:20px;letter-spacing:2px;white-space:nowrap}
-.part{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--purple);margin:10px 0 0}
-.card{background:#fff;border:2px solid var(--line);border-radius:22px;padding:20px 18px;animation:in .5s ease}
-@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.card h2{margin:0 0 4px;font-size:26px;line-height:1.25}
-.lvl{color:var(--teal);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.05em}
-.blk{margin:16px 0}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.tile{background:var(--bg);border-radius:16px;padding:12px 14px}
-.tile .e{font-size:26px}
-.tile b{display:block}
-.tile span{color:var(--soft);font-size:16px}
-.warn{background:#FFF7E0;border-left:6px solid var(--gold);border-radius:12px;padding:12px 14px}
-.info{background:#E8F7F5;border-left:6px solid var(--teal);border-radius:12px;padding:12px 14px}
-ol.steps{padding-left:0;list-style:none;counter-reset:s;margin:0}
-ol.steps li{counter-increment:s;position:relative;padding:8px 0 8px 52px;min-height:44px}
-ol.steps li::before{content:counter(s);position:absolute;left:0;top:4px;width:38px;height:38px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;display:grid;place-items:center}
-.shot{position:relative;margin:0 auto;border-radius:18px;overflow:hidden;border:2px solid var(--line);background:#111}
-.shot img{display:block;width:100%;height:auto}
-.spot{position:absolute;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:var(--gold);color:#111;font-weight:900;border:3px solid #fff;box-shadow:0 0 0 0 rgba(245,179,1,.7);animation:pulse 2s infinite;display:grid;place-items:center;font-size:18px;padding:0}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(245,179,1,.7)}70%{box-shadow:0 0 0 14px rgba(245,179,1,0)}100%{box-shadow:0 0 0 0 rgba(245,179,1,0)}}
-.spot.on{background:var(--purple);color:#fff;animation:none}
-.legend{display:grid;gap:8px;margin-top:10px}
-.legend button{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--bg);border:2px solid transparent;border-radius:14px;padding:8px 12px}
-.legend button.on{border-color:var(--purple);background:#F3EDFF}
-.legend i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--gold);font-weight:900;display:grid;place-items:center;flex-shrink:0}
-.cap{color:var(--soft);font-size:15px;text-align:center;margin-top:6px}
-.prompt{background:#F1F5FF;border:2px dashed #A9C1F5;border-radius:16px;padding:14px;white-space:pre-wrap}
-.copy{margin-top:10px;background:var(--blue);color:#fff;border:0;border-radius:12px;padding:10px 18px;font-weight:700}
-.copy.ok{background:var(--ok)}
-.dl{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;text-decoration:none;border-radius:14px;padding:12px 20px;font-weight:800}
-.task{display:flex;gap:12px;align-items:center;background:var(--bg);border:2px solid var(--line);border-radius:16px;padding:12px 14px;width:100%;text-align:left}
-.task .bx{width:32px;height:32px;border-radius:10px;border:3px solid var(--soft);flex-shrink:0;display:grid;place-items:center;font-weight:900;color:#fff}
-.task.on{border-color:var(--ok);background:#E6F7EF}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--violet);outline-offset:3px;border-radius:12px}
+svg.i{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.wrap{max-width:780px;margin:0 auto;padding:16px 12px 28px}
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:22px 22px 20px;color:#fff;background:radial-gradient(120% 140% at 100% 0%,#7B61FF 0%,#3657E8 45%,#1B2350 100%);box-shadow:var(--sh)}
+.orn{position:absolute;opacity:.15;pointer-events:none}
+.hero .orn{right:-30px;top:-30px;width:190px}
+.eyebrow{font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.hero h1{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1.2;margin:6px 0 14px;max-width:520px}
+.hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:7px 14px;font-weight:800}
+.pill .st svg{color:#FFD166;fill:#FFD166}
+.prog{flex:1;min-width:160px;height:10px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#FFD166,#E9A824);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.sect{display:flex;align-items:center;gap:10px;margin:26px 4px 8px;font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.sect::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+.route{position:relative;padding-left:8px}
+.route::before{content:"";position:absolute;left:43px;top:30px;bottom:30px;width:4px;border-radius:4px;background:repeating-linear-gradient(180deg,#CCD4E6 0 10px,transparent 10px 18px)}
+.node{position:relative;display:flex;align-items:center;gap:16px;width:100%;background:none;border:0;padding:8px 0;text-align:left}
+.med{position:relative;z-index:1;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:30px;color:#fff;flex-shrink:0;box-shadow:0 6px 16px rgba(27,35,80,.18);border:4px solid #fff;transition:transform .25s}
+.th .med{background:linear-gradient(145deg,#19C3BC,#3657E8)}
+.pr .med{background:linear-gradient(145deg,#9B7BFF,#E0569B)}
+.node.done .med{background:linear-gradient(145deg,#F6C24A,#E08E0B)}
+.node.lock .med{background:#DCE1EC;color:#9AA3BA;box-shadow:none}
+.node.now .med::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:3px solid var(--gold);animation:ring 1.8s ease-out infinite}
+@keyframes ring{0%{transform:scale(.9);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.node:not(.lock):hover .med{transform:scale(1.06)}
+.lab{flex:1;background:var(--paper);border-radius:18px;padding:12px 16px;box-shadow:var(--sh);border:2px solid transparent}
+.node.now .lab{border-color:var(--gold)}
+.node.lock .lab{background:#F7F8FB;box-shadow:none;color:#98A0B6}
+.lab b{display:block;font-weight:800;font-size:18px;line-height:1.3}
+.lab small{display:flex;align-items:center;gap:6px;color:var(--soft);font-size:15px;margin-top:3px}
+.stars3{display:inline-flex;gap:2px;font-size:18px}
+.stars3 .on svg{color:var(--gold);fill:var(--gold)}
+.stars3 .off svg{color:#CDD3E1}
+.node.fin .med{width:84px;height:84px;font-size:36px;margin-left:-6px}
+.lvtop{position:relative;overflow:hidden;border-radius:28px;padding:22px;color:#fff;display:flex;gap:16px;align-items:center;box-shadow:var(--sh);animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+.lvtop.th{background:linear-gradient(135deg,#0EA5A0,#3657E8)}
+.lvtop.pr{background:linear-gradient(135deg,#7B61FF,#D9468F)}
+.lvtop .orn{right:-40px;bottom:-50px;width:180px}
+.lvtop .big{width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:38px;flex-shrink:0}
+.lvtop h2{font-family:var(--disp);font-weight:700;font-size:24px;line-height:1.2;margin:4px 0 0}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.body{background:var(--paper);border-radius:var(--r);box-shadow:var(--sh);padding:6px 20px 20px;margin-top:14px;animation:rise .6s .05s both cubic-bezier(.2,.8,.2,1)}
+.blk{margin:18px 0}
+.blk p{margin:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.tile{display:flex;gap:12px;align-items:flex-start;background:var(--bg);border-radius:16px;padding:12px 14px}
+.tile .ti{width:42px;height:42px;border-radius:12px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:22px;flex-shrink:0;box-shadow:0 2px 6px rgba(27,35,80,.08)}
+.tile.neg .ti{color:var(--bad)}
+.tile b{display:block;line-height:1.3}
+.tile span{color:var(--soft);font-size:16px;line-height:1.4}
+.note{display:flex;gap:12px;align-items:flex-start;border-radius:16px;padding:14px 16px}
+.note .ni{font-size:24px;line-height:1;margin-top:2px}
+.note.warn{background:var(--goldl);color:#5A4203}
+.note.warn .ni{color:#C88A06}
+.note.info{background:#E5F6F5;color:#0B4F4C}
+.note.info .ni{color:var(--teal)}
+ol.steps{padding:0;list-style:none;counter-reset:s;margin:0}
+ol.steps li{counter-increment:s;position:relative;padding:9px 0 9px 54px;min-height:46px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:38px;height:38px;border-radius:12px;background:var(--ink);color:#fff;font-weight:800;display:grid;place-items:center}
+.phone{position:relative;margin:0 auto;padding:10px;border-radius:38px;background:#111521;box-shadow:0 18px 40px rgba(27,35,80,.25),inset 0 0 0 2px #2A3045}
+.phone .scr{position:relative;border-radius:28px;overflow:hidden;background:#000}
+.phone img{display:block;width:100%;height:auto}
+.spot{position:absolute;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:var(--gold);color:#1B2350;font-weight:800;border:3px solid #fff;display:grid;place-items:center;font-size:17px;padding:0;box-shadow:0 4px 10px rgba(0,0,0,.35);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,-50%) scale(1.1)}}
+.spot.on{background:var(--violet);color:#fff;animation:none;transform:translate(-50%,-50%) scale(1.15)}
+.cap{color:var(--soft);font-size:15px;text-align:center;margin-top:10px}
+.legend{display:grid;gap:8px;margin-top:12px}
+.legend button{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--bg);border:2px solid transparent;border-radius:14px;padding:10px 12px}
+.legend button.on{border-color:var(--violet);background:#F1EEFF}
+.legend i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--gold);font-weight:800;display:grid;place-items:center;flex-shrink:0}
+.legend button.on i{background:var(--violet);color:#fff}
+.prompt{position:relative;background:#F5F7FF;border:1.5px solid #D5DDF8;border-radius:18px;padding:16px 16px 14px 20px;white-space:pre-wrap}
+.prompt::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--blue)}
+.act{display:inline-flex;align-items:center;gap:8px;margin-top:10px;border:0;border-radius:14px;padding:11px 18px;font-weight:800;background:var(--blue);color:#fff;font-size:17px;box-shadow:0 4px 12px rgba(54,87,232,.28)}
+.act.ok{background:var(--ok);box-shadow:none}
+.dl{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;text-decoration:none;border-radius:16px;padding:13px 20px;font-weight:800;box-shadow:0 4px 12px rgba(14,165,160,.28)}
+.task{display:flex;gap:14px;align-items:center;background:#fff;border:2px dashed #C9D1E3;border-radius:16px;padding:12px 14px;width:100%;text-align:left;font-weight:700;transition:all .2s}
+.task .bx{width:34px;height:34px;border-radius:11px;border:2.5px solid #AEB7CC;flex-shrink:0;display:grid;place-items:center;color:#fff;font-size:20px;transition:all .2s}
+.task.on{border-style:solid;border-color:var(--ok);background:#EAF8F1}
 .task.on .bx{background:var(--ok);border-color:var(--ok)}
-.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
-.flip{background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px;text-align:left;min-height:120px}
-.flip b{display:block;margin-bottom:6px}
-.flip .back{display:none;color:var(--soft);font-size:16px}
-.flip.on{background:#F3EDFF;border-color:var(--purple)}
-.flip.on .back{display:block}
-.flip .hint{font-size:14px;color:var(--purple);font-weight:700}
-.flip.on .hint{display:none}
-.quiz{margin-top:22px;background:linear-gradient(135deg,#EEF3FF,#F3EDFF);border-radius:20px;padding:18px}
-.quiz h3{margin:0 0 10px;font-size:20px}
-.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
-.opt.ok{border-color:var(--ok);background:#E6F7EF}
-.opt.bad{border-color:var(--bad);background:#FDECEC;animation:shake .4s}
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.flip{display:flex;flex-direction:column;gap:6px;background:var(--bg);border:2px solid transparent;border-radius:18px;padding:14px;text-align:left;min-height:118px;transition:all .25s}
+.flip .fi{width:40px;height:40px;border-radius:12px;background:#fff;color:var(--violet);display:grid;place-items:center;font-size:21px}
+.flip b{line-height:1.3}
+.flip .back{display:none;color:var(--soft);font-size:16px;line-height:1.45}
+.flip .hint{font-size:14px;color:var(--violet);font-weight:800;margin-top:auto}
+.flip.on{background:#F1EEFF;border-color:var(--violet)}
+.flip.on .back{display:block}.flip.on .hint{display:none}
+h3.sub{font-family:var(--disp);font-weight:600;font-size:18px;margin:24px 0 8px}
+.quiz{margin-top:24px;border-radius:22px;padding:18px;background:linear-gradient(180deg,#F1EEFF,#F5F7FF)}
+.quiz .qh{display:flex;gap:10px;align-items:flex-start;font-weight:800;font-size:19px;margin-bottom:6px}
+.quiz .qh .q{color:var(--violet);font-size:24px;line-height:1;margin-top:2px}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin:9px 0;transition:all .2s}
+.opt .k{width:32px;height:32px;border-radius:10px;background:var(--bg);font-weight:800;display:grid;place-items:center;flex-shrink:0}
+.opt:hover{border-color:#B9C3DB}
+.opt.ok{border-color:var(--ok);background:#EAF8F1}.opt.ok .k{background:var(--ok);color:#fff}
+.opt.bad{border-color:var(--bad);background:#FDEDEB;animation:shake .4s}.opt.bad .k{background:var(--bad);color:#fff}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.why{margin-top:8px;font-weight:600}
-.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-.btn{border:0;border-radius:14px;padding:14px 22px;font-weight:800;font-size:19px}
-.btn.main{background:var(--purple);color:#fff;flex:1}
-.btn.main:disabled{background:#C9CFDA;cursor:not-allowed}
-.btn.ghost{background:#fff;border:2px solid var(--line);color:var(--ink)}
-.need{color:var(--soft);font-size:15px;margin-top:8px}
-.final{text-align:center}
-.badge{width:170px;height:170px;margin:10px auto;border-radius:50%;background:conic-gradient(var(--teal),var(--blue),var(--purple),var(--teal));display:grid;place-items:center;animation:pop .8s ease}
-.badge div{width:140px;height:140px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:60px}
-@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
-.toast{position:absolute;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:14px;padding:12px 20px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+.why{font-weight:700;margin-top:6px}
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:16px;padding:15px 22px;font-weight:800;font-size:18px}
+.btn.main{flex:1;background:var(--ink);color:#fff;box-shadow:0 6px 16px rgba(27,35,80,.25)}
+.btn.main:disabled{background:#CBD2E0;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:#fff;border:2px solid var(--line)}
+.need{color:var(--soft);font-size:15px;margin-top:8px;text-align:center}
+.final{text-align:center;padding:26px 20px}
+.cup{width:150px;height:150px;margin:6px auto 10px;border-radius:50%;display:grid;place-items:center;font-size:72px;color:#fff;background:radial-gradient(circle at 35% 30%,#FFE08A,#E9A824 55%,#B97300);box-shadow:0 14px 34px rgba(233,168,36,.45),inset 0 0 0 8px rgba(255,255,255,.35);animation:pop .9s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(.2) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}
+.final h2{font-family:var(--disp);font-weight:700;font-size:24px;line-height:1.25;margin:8px 0}
+canvas#cf{position:absolute;left:0;top:0;width:100%;pointer-events:none}
+.toast{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;font-weight:800;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;white-space:nowrap}
 .toast.on{opacity:1}
-@media (max-width:520px){html,body{font-size:18px}.card{padding:16px 14px}.card h2{font-size:23px}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:520px){html,body{font-size:18px}.hero h1{font-size:21px}.lvtop h2{font-size:20px}.lvtop .big{width:62px;height:62px;font-size:30px}.body{padding:4px 14px 16px}.med{width:62px;height:62px;font-size:26px}.route::before{left:38px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
-<script id="data" type="application/json">{"lang": "ru", "ui": {"title": "Занятие 2: ChatGPT — микрокурс-игра", "done": "Пройдено", "start": "Начать", "locked": "Сначала пройдите предыдущий уровень", "level": "Уровень", "map": "Карта", "next": "Следующий уровень", "toFinal": "К финишу", "copy": "Копировать", "copied": "Скопировано", "flip": "Нажмите — что внутри?", "great": "Отлично!", "tryAgain": "Попробуйте ещё раз — у вас обязательно получится!", "needQuiz": "Чтобы перейти дальше, ответьте на вопрос.", "needTasks": "Чтобы перейти дальше, отметьте все задания.", "finalTitle": "Поздравляем! Вы освоили ChatGPT", "finalLocked": "Откроется после всех уровней", "finalText": "Вы собрали {s} / {m} звёзд. Теперь вы умеете менять картинки, создавать открытки и работать с документами в ChatGPT.", "homework": "<b>Домашнее задание:<\/b> создайте пригласительную открытку. Текст задания и поле для ответа — внизу этой страницы.", "reset": "Начать заново", "resetQ": "Все звёзды сбросятся. Начать заново?"}, "levels": [{"id": "what", "part": "Теория", "icon": "🤖", "title": "Что такое ChatGPT?", "blocks": [{"t": "p", "h": "<b>ChatGPT<\/b> — помощник с искусственным интеллектом. Как Meta AI из прошлого занятия, только в отдельном приложении и с большими возможностями. Вы пишете или говорите обычными словами — он отвечает."}, {"t": "tiles", "items": [["💌", "Поздравление", "«Напиши поздравление сестре с 60-летием»"], ["🖼️", "Картинка", "«Нарисуй открытку к Наурызу»"], ["📄", "Документ", "Прикрепить файл: «Кратко перескажи»"], ["🍲", "Меню", "«Что приготовить из картошки и курицы?»"], ["🌐", "Перевод", "«Переведи на казахский: …»"], ["💡", "Объяснение", "«Объясни это объявление простыми словами»"]]}, {"t": "info", "h": "ChatGPT <b>бесплатный<\/b>, работает на телефоне и компьютере, понимает казахский и русский."}, {"t": "warn", "h": "⚠️ ChatGPT может ошибаться. Даты, цифры и адреса всегда проверяйте. Решение принимаете вы."}], "quiz": {"q": "Может ли ChatGPT ошибаться?", "opts": ["Нет, никогда", "Да, поэтому важные ответы проверяем", "Только ночью"], "ok": 1, "why": "Верно! ChatGPT — помощник, а последнее слово всегда за человеком."}}, {"id": "install", "part": "Теория", "icon": "📲", "title": "Установка приложения", "blocks": [{"t": "shot", "src": "/lessons/m2/shots/play.jpg", "max": 380, "cap": "Страница ChatGPT в Play Маркете", "spots": [[54, 13.6, "Под названием должно быть написано <b>OpenAI<\/b> — только это настоящее приложение"], [93, 53.3, "Нажмите <b>«Установить»<\/b>"]]}, {"t": "steps", "items": ["<b>Android<\/b> — откройте Play Маркет, <b>iPhone<\/b> — App Store.", "В поиске напишите <b>ChatGPT<\/b>.", "Выберите приложение, где написано <b>OpenAI<\/b>.", "Нажмите «Установить» (на iPhone — «Загрузить») и откройте приложение."]}, {"t": "warn", "h": "⚠️ В магазине есть подделки с похожими названиями, которые сразу просят деньги. Настоящий ChatGPT — от OpenAI и бесплатный."}], "quiz": {"q": "Что написано под названием настоящего приложения ChatGPT?", "opts": ["AI Chat Bot Pro", "OpenAI", "Free GPT 2026"], "ok": 1, "why": "Да! OpenAI — компания, которая создала ChatGPT."}}, {"id": "signup", "part": "Теория", "icon": "🔑", "title": "Регистрация", "blocks": [{"t": "shot", "src": "/lessons/m2/shots/login_c.jpg", "max": 340, "cap": "Окно входа в ChatGPT", "spots": [[93, 47, "<b>Через Google<\/b> — самый простой путь для телефонов Android"], [93, 56.6, "<b>Через Apple<\/b> — для iPhone"], [93, 66.3, "<b>По номеру телефона<\/b> — придёт код в SMS"], [93, 82.7, "<b>Email<\/b> — вводите почту, придумываете пароль, на почту придёт код"]]}, {"t": "steps", "items": ["Нажмите <b>«Продолжить с Google»<\/b> (на iPhone — с Apple).", "Выберите свою почту из списка.", "Если попросит — укажите имя и дату рождения.", "Предложат купить Plus — <b>закройте крестиком<\/b>. Бесплатной версии достаточно."]}, {"t": "info", "h": "💻 На компьютере: откройте в браузере <b>chatgpt.com<\/b>, нажмите «Войти» и выберите тот же способ, что на телефоне. Все разговоры видны на обоих устройствах."}, {"t": "warn", "h": "🔒 Код из письма или SMS никому не сообщайте. Данные карты не вводите."}], "quiz": {"q": "После регистрации предлагают купить подписку Plus. Что делаем?", "opts": ["Вводим номер карты", "Закрываем крестиком — бесплатной версии хватает", "Удаляем приложение"], "ok": 1, "why": "Верно! Для курса бесплатной версии полностью достаточно."}}, {"id": "screen", "part": "Теория", "icon": "🧭", "title": "Знакомство с экраном", "blocks": [{"t": "p", "h": "Нажимайте на жёлтые номера — узнаете, для чего каждая кнопка."}, {"t": "shot", "src": "/lessons/m2/shots/home.jpg", "max": 360, "cap": "Главный экран ChatGPT", "spots": [[10, 13, "<b>Меню<\/b> — все прошлые разговоры и «Новый чат»"], [86.4, 13, "<b>Войти<\/b> — вход в аккаунт"], [8.3, 71, "<b>«+»<\/b> — прикрепить фото, картинку или документ"], [40, 71, "<b>Поле ввода<\/b> — сюда пишем просьбу"], [76.8, 71, "<b>Микрофон<\/b> — сказать вопрос голосом, он превратится в текст"], [91, 86, "<b>Голосовой режим<\/b> — разговаривать с ChatGPT, как по телефону"]]}], "quiz": {"q": "Как прикрепить документ или фото?", "opts": ["Через микрофон", "Кнопкой «+»", "Кнопкой «Войти»"], "ok": 1, "why": "Да! «+» — кнопка для файлов, фото и картинок."}}, {"id": "first", "part": "Теория", "icon": "💬", "title": "Первый разговор", "blocks": [{"t": "p", "h": "Откройте ChatGPT, скопируйте и отправьте:"}, {"t": "prompt", "text": "Здравствуй! Я только начинаю пользоваться тобой. Расскажи простыми словами в трёх пунктах, чем ты можешь мне помочь."}, {"t": "task", "id": "f1", "label": "Отправил(а), получил(а) ответ"}, {"t": "p", "h": "Теперь нажмите 🎤 микрофон и скажите голосом: <b>«Посоветуй лёгкую утреннюю зарядку на 10 минут»<\/b>."}, {"t": "task", "id": "f2", "label": "Спросил(а) голосом"}, {"t": "p", "h": "Ответ не понравился? Не начинайте сначала — попросите исправить в том же чате:"}, {"t": "prompt", "text": "Сделай короче и проще, только упражнения сидя."}, {"t": "task", "id": "f3", "label": "Попросил(а) исправить ответ"}]}, {"id": "hacks", "part": "Теория", "icon": "✨", "title": "Лайфхаки", "blocks": [{"t": "p", "h": "Нажимайте на карточки — секреты хорошего результата:"}, {"t": "flips", "items": [["🖼️ Дайте образец (референс)", "Прикрепите через «+» картинку, которая нравится: «Сделай в таком же стиле, но к Наурызу»."], ["👥 Для кого и где?", "«…для группы в WhatsApp», «…для печати на листе A4»."], ["🎭 Дайте роль", "«Ты — опытный дизайнер открыток»."], ["📏 Формат", "«В пяти пунктах», «не больше 50 слов», «вертикальный формат»."], ["✍️ Текст — в кавычках", "«Напиши точно так: «С днём рождения!»». Короткая надпись — меньше ошибок."], ["🚫 Что НЕ менять", "«Остальной дизайн не изменяй»."], ["1️⃣ Одно изменение за раз", "Сначала «поменяй цвет», потом «добавь коробку»."], ["🔢 Попросите варианты", "«Предложи 3 варианта, я выберу»."], ["❔ Пусть задаст вопросы", "«Прежде чем делать, задай мне 3 уточняющих вопроса»."], ["🆕 Новая тема — новый чат", "Старый разговор мешает новому заданию."]]}, {"t": "h", "h": "📌 Где найти образцы"}, {"t": "p", "h": "<b><a href=\"https://pinterest.com\" target=\"_blank\" rel=\"noopener\">Pinterest<\/a><\/b> — идеи открыток и орнаментов · <b><a href=\"https://canva.com\" target=\"_blank\" rel=\"noopener\">Canva<\/a><\/b> — готовые шаблоны · <b><a href=\"https://unsplash.com\" target=\"_blank\" rel=\"noopener\">Unsplash<\/a><\/b>, <b><a href=\"https://pexels.com\" target=\"_blank\" rel=\"noopener\">Pexels<\/a><\/b> — бесплатные фото для свободного использования."}, {"t": "info", "h": "Картинку из Pinterest берём только как пример стиля: «Возьми только цвета и стиль, рисунок и текст сделай свои»."}], "quiz": {"q": "Какая просьба даст лучший результат?", "opts": ["«Сделай открытку»", "«Ты — дизайнер. Сделай вертикальную открытку ко дню рождения, в центре крупно напиши «С днём рождения!», для отправки в WhatsApp»"], "ok": 1, "why": "Верно! Для кого, в каком формате, с каким текстом — чем точнее, тем лучше."}}, {"id": "safe", "part": "Теория", "icon": "🛡️", "title": "Безопасность", "blocks": [{"t": "tiles", "items": [["🪪", "Нельзя", "Паспорт, ИИН, номера документов"], ["💳", "Нельзя", "Номер карты, коды из SMS, пароли"], ["🩺", "Нельзя", "Медицинские заключения"], ["👨‍👩‍👧", "Нельзя", "Фото и данные других людей без согласия"]]}, {"t": "steps", "items": ["Совпадают ли даты, время и адрес с оригиналом?", "Нет ли того, чего не было в документе?", "Правильно ли написаны надписи на картинке?"]}, {"t": "info", "h": "ChatGPT — помощник, а не начальник. Он предлагает, а решаем мы."}], "quiz": {"q": "Что можно загрузить в ChatGPT?", "opts": ["Фото паспорта", "Фото банковской карты", "Объявление о концерте со стенда"], "ok": 2, "why": "Верно! Объявление без личных данных — безопасно."}}, {"id": "p1", "part": "Практика", "icon": "🎨", "title": "Меняем картинку", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Откройте картинку и сохраните в телефон (нажмите и удерживайте — «Сохранить»)."}, {"t": "dl", "href": "/lessons/m2/stol_cvety.png", "label": "Открыть картинку со столом"}, {"t": "steps", "items": ["В ChatGPT нажмите <b>«+»<\/b> → «Фото» → выберите сохранённую картинку.", "Скопируйте промпт и отправьте."]}, {"t": "prompt", "text": "Измени это изображение: поменяй цвет цветов с красного на жёлтый, добавь на стол небольшую подарочную коробку и сделай фон праздничным. Сохрани основную композицию изображения."}, {"t": "task", "id": "p1a", "label": "Изменил(а) картинку"}, {"t": "prompt", "text": "Сделай изображение более светлым, используй тёплые цвета и улучши его качество."}, {"t": "task", "id": "p1b", "label": "Попросил(а) улучшить"}, {"t": "info", "h": "🤔 У всех получилось одинаково? Нет — ИИ каждый раз рисует немного по-своему. Если нужное изменение не выполнено — уточните запрос."}, {"t": "p", "h": "<b>Б. Своё задание.<\/b> Сфотографируйте что-то рядом с собой и замените слова в скобках:"}, {"t": "prompt", "text": "Измени это изображение: [что поменять], [что добавить], [какой сделать фон]. Сохрани основную композицию."}, {"t": "task", "id": "p1c", "label": "Изменил(а) своё фото"}]}, {"id": "p2", "part": "Практика", "icon": "💐", "title": "Создаём открытку", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Нажмите «Новый чат» и отправьте:"}, {"t": "prompt", "text": "Создай красивую поздравительную открытку ко дню рождения. Добавь цветы, подарочную коробку и лёгкие золотистые узоры. В центре крупными и хорошо читаемыми буквами напиши: «С днём рождения!». Дизайн должен быть тёплым, элегантным и предназначенным для взрослого человека. Сделай открытку в вертикальном формате."}, {"t": "task", "id": "p2a", "label": "Открытка готова"}, {"t": "prompt", "text": "Добавь в нижней части открытки надпись: «С уважением, ваши коллеги». Остальной дизайн не изменяй."}, {"t": "warn", "h": "✍️ Проверьте надпись! ИИ часто ошибается в буквах, особенно в казахских. Если есть ошибка:"}, {"t": "prompt", "text": "Не изменяй дизайн открытки. Исправь надпись и напиши её точно так: «С днём рождения!»"}, {"t": "task", "id": "p2b", "label": "Проверил(а) надпись"}, {"t": "p", "h": "<b>Б. Своя открытка:<\/b> юбилей, Наурыз, новоселье, День учителя. Замените слова в скобках:"}, {"t": "prompt", "text": "Создай красивую поздравительную открытку [к юбилею]. Добавь [что нарисовать]. В центре крупно напиши: «[ваш текст]». Дизайн тёплый и элегантный, для взрослого человека, вертикальный формат."}, {"t": "task", "id": "p2c", "label": "Создал(а) свою открытку и сохранил(а) в телефон"}]}, {"id": "p3", "part": "Практика", "icon": "📄", "title": "Работа с документом", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Скачайте документ:"}, {"t": "dl", "href": "/lessons/m2/Plan_meropriyatiy_RU.docx", "dl": true, "label": "Скачать план мероприятий", "note": "Файл попадёт в папку «Загрузки» телефона"}, {"t": "steps", "items": ["«Новый чат» → <b>«+»<\/b> → «Файлы» → выберите документ.", "Отправляйте промпты по очереди."]}, {"t": "prompt", "text": "Прочитай прикреплённый документ. Простыми словами изложи его основное содержание в пяти пунктах. Отдельно укажи важные даты, время и место проведения."}, {"t": "task", "id": "p3a", "label": "Получил(а) пересказ"}, {"t": "prompt", "text": "На основе этого документа подготовь короткое и понятное сообщение для отправки в группу WhatsApp."}, {"t": "prompt", "text": "Представь информацию из документа в виде таблицы с двумя столбцами: «Важная информация» и «Что необходимо сделать»."}, {"t": "task", "id": "p3b", "label": "Получил(а) сообщение и таблицу"}, {"t": "warn", "h": "🔍 Сверьте с документом: дата, время, место верны? Если сомневаетесь: «Ответь только на основе прикреплённого документа. Если информации нет, напиши: «В документе этого нет»»."}, {"t": "p", "h": "<b>Б. Своё задание.<\/b> Сфотографируйте текст без личных данных (объявление, инструкцию, рецепт) и прикрепите через «+»:"}, {"t": "prompt", "text": "Прочитай текст на фотографии и объясни простыми словами в трёх пунктах, что здесь написано и что мне нужно сделать."}, {"t": "task", "id": "p3c", "label": "Разобрал(а) свой текст"}]}]}</script>
+<script id="data" type="application/json">{"lang": "ru", "ui": {"title": "Занятие 2: ChatGPT — микрокурс-игра", "done": "Пройдено", "start": "Начать", "locked": "Сначала пройдите предыдущий уровень", "level": "Уровень", "map": "Карта", "next": "Следующий уровень", "toFinal": "К финишу", "copy": "Копировать", "copied": "Скопировано", "flip": "Нажмите — что внутри?", "great": "Отлично!", "tryAgain": "Попробуйте ещё раз — у вас обязательно получится!", "needQuiz": "Чтобы перейти дальше, ответьте на вопрос.", "needTasks": "Чтобы перейти дальше, отметьте все задания.", "finalTitle": "Поздравляем! Вы освоили ChatGPT", "finalLocked": "Откроется после всех уровней", "finalText": "Вы собрали {s} / {m} звёзд. Теперь вы умеете менять картинки, создавать открытки и работать с документами в ChatGPT.", "homework": "<b>Домашнее задание:<\/b> создайте пригласительную открытку. Текст задания и поле для ответа — внизу этой страницы.", "reset": "Начать заново", "resetQ": "Все звёзды сбросятся. Начать заново?", "eyebrow": "Искусственный интеллект · занятие 2", "finish": "Финиш"}, "levels": [{"id": "what", "part": "Теория", "icon": "bot", "title": "Что такое ChatGPT?", "blocks": [{"t": "p", "h": "<b>ChatGPT<\/b> — помощник с искусственным интеллектом. Как Meta AI из прошлого занятия, только в отдельном приложении и с большими возможностями. Вы пишете или говорите обычными словами — он отвечает."}, {"t": "tiles", "items": [["mail", "Поздравление", "«Напиши поздравление сестре с 60-летием»"], ["image", "Картинка", "«Нарисуй открытку к Наурызу»"], ["file", "Документ", "Прикрепить файл: «Кратко перескажи»"], ["food", "Меню", "«Что приготовить из картошки и курицы?»"], ["globe", "Перевод", "«Переведи на казахский: …»"], ["bulb", "Объяснение", "«Объясни это объявление простыми словами»"]]}, {"t": "info", "h": "ChatGPT <b>бесплатный<\/b>, работает на телефоне и компьютере, понимает казахский и русский."}, {"t": "warn", "h": "ChatGPT может ошибаться. Даты, цифры и адреса всегда проверяйте. Решение принимаете вы.", "i": "alert"}], "quiz": {"q": "Может ли ChatGPT ошибаться?", "opts": ["Нет, никогда", "Да, поэтому важные ответы проверяем", "Только ночью"], "ok": 1, "why": "Верно! ChatGPT — помощник, а последнее слово всегда за человеком."}}, {"id": "install", "part": "Теория", "icon": "phone", "title": "Установка приложения", "blocks": [{"t": "shot", "src": "/lessons/m2/shots/play.jpg", "max": 380, "cap": "Страница ChatGPT в Play Маркете", "spots": [[54, 13.6, "Под названием должно быть написано <b>OpenAI<\/b> — только это настоящее приложение"], [93, 53.3, "Нажмите <b>«Установить»<\/b>"]]}, {"t": "steps", "items": ["<b>Android<\/b> — откройте Play Маркет, <b>iPhone<\/b> — App Store.", "В поиске напишите <b>ChatGPT<\/b>.", "Выберите приложение, где написано <b>OpenAI<\/b>.", "Нажмите «Установить» (на iPhone — «Загрузить») и откройте приложение."]}, {"t": "warn", "h": "В магазине есть подделки с похожими названиями, которые сразу просят деньги. Настоящий ChatGPT — от OpenAI и бесплатный.", "i": "alert"}], "quiz": {"q": "Что написано под названием настоящего приложения ChatGPT?", "opts": ["AI Chat Bot Pro", "OpenAI", "Free GPT 2026"], "ok": 1, "why": "Да! OpenAI — компания, которая создала ChatGPT."}}, {"id": "signup", "part": "Теория", "icon": "key", "title": "Регистрация", "blocks": [{"t": "shot", "src": "/lessons/m2/shots/login_c.jpg", "max": 340, "cap": "Окно входа в ChatGPT", "spots": [[93, 47, "<b>Через Google<\/b> — самый простой путь для телефонов Android"], [93, 56.6, "<b>Через Apple<\/b> — для iPhone"], [93, 66.3, "<b>По номеру телефона<\/b> — придёт код в SMS"], [93, 82.7, "<b>Email<\/b> — вводите почту, придумываете пароль, на почту придёт код"]]}, {"t": "steps", "items": ["Нажмите <b>«Продолжить с Google»<\/b> (на iPhone — с Apple).", "Выберите свою почту из списка.", "Если попросит — укажите имя и дату рождения.", "Предложат купить Plus — <b>закройте крестиком<\/b>. Бесплатной версии достаточно."]}, {"t": "info", "h": "На компьютере: откройте в браузере <b>chatgpt.com<\/b>, нажмите «Войти» и выберите тот же способ, что на телефоне. Все разговоры видны на обоих устройствах.", "i": "laptop"}, {"t": "warn", "h": "Код из письма или SMS никому не сообщайте. Данные карты не вводите.", "i": "lock"}], "quiz": {"q": "После регистрации предлагают купить подписку Plus. Что делаем?", "opts": ["Вводим номер карты", "Закрываем крестиком — бесплатной версии хватает", "Удаляем приложение"], "ok": 1, "why": "Верно! Для курса бесплатной версии полностью достаточно."}}, {"id": "screen", "part": "Теория", "icon": "compass", "title": "Знакомство с экраном", "blocks": [{"t": "p", "h": "Нажимайте на жёлтые номера — узнаете, для чего каждая кнопка."}, {"t": "shot", "src": "/lessons/m2/shots/home.jpg", "max": 360, "cap": "Главный экран ChatGPT", "spots": [[10, 13, "<b>Меню<\/b> — все прошлые разговоры и «Новый чат»"], [86.4, 13, "<b>Войти<\/b> — вход в аккаунт"], [8.3, 71, "<b>«+»<\/b> — прикрепить фото, картинку или документ"], [40, 71, "<b>Поле ввода<\/b> — сюда пишем просьбу"], [76.8, 71, "<b>Микрофон<\/b> — сказать вопрос голосом, он превратится в текст"], [91, 86, "<b>Голосовой режим<\/b> — разговаривать с ChatGPT, как по телефону"]]}], "quiz": {"q": "Как прикрепить документ или фото?", "opts": ["Через микрофон", "Кнопкой «+»", "Кнопкой «Войти»"], "ok": 1, "why": "Да! «+» — кнопка для файлов, фото и картинок."}}, {"id": "first", "part": "Теория", "icon": "chat", "title": "Первый разговор", "blocks": [{"t": "p", "h": "Откройте ChatGPT, скопируйте и отправьте:"}, {"t": "prompt", "text": "Здравствуй! Я только начинаю пользоваться тобой. Расскажи простыми словами в трёх пунктах, чем ты можешь мне помочь."}, {"t": "task", "id": "f1", "label": "Отправил(а), получил(а) ответ"}, {"t": "p", "h": "Теперь нажмите 🎤 микрофон и скажите голосом: <b>«Посоветуй лёгкую утреннюю зарядку на 10 минут»<\/b>."}, {"t": "task", "id": "f2", "label": "Спросил(а) голосом"}, {"t": "p", "h": "Ответ не понравился? Не начинайте сначала — попросите исправить в том же чате:"}, {"t": "prompt", "text": "Сделай короче и проще, только упражнения сидя."}, {"t": "task", "id": "f3", "label": "Попросил(а) исправить ответ"}]}, {"id": "hacks", "part": "Теория", "icon": "sparkle", "title": "Лайфхаки", "blocks": [{"t": "p", "h": "Нажимайте на карточки — секреты хорошего результата:"}, {"t": "flips", "items": [["Дайте образец (референс)", "Прикрепите через «+» картинку, которая нравится: «Сделай в таком же стиле, но к Наурызу».", "image"], ["Для кого и где?", "«…для группы в WhatsApp», «…для печати на листе A4».", "users"], ["Дайте роль", "«Ты — опытный дизайнер открыток».", "mask"], ["Формат", "«В пяти пунктах», «не больше 50 слов», «вертикальный формат».", "ruler"], ["Текст — в кавычках", "«Напиши точно так: «С днём рождения!»». Короткая надпись — меньше ошибок.", "quote"], ["Что НЕ менять", "«Остальной дизайн не изменяй».", "ban"], ["Одно изменение за раз", "Сначала «поменяй цвет», потом «добавь коробку».", "one"], ["Попросите варианты", "«Предложи 3 варианта, я выберу».", "list"], ["Пусть задаст вопросы", "«Прежде чем делать, задай мне 3 уточняющих вопроса».", "help"], ["Новая тема — новый чат", "Старый разговор мешает новому заданию.", "plus"]]}, {"t": "h", "h": "Где найти образцы"}, {"t": "p", "h": "<b><a href=\"https://pinterest.com\" target=\"_blank\" rel=\"noopener\">Pinterest<\/a><\/b> — идеи открыток и орнаментов · <b><a href=\"https://canva.com\" target=\"_blank\" rel=\"noopener\">Canva<\/a><\/b> — готовые шаблоны · <b><a href=\"https://unsplash.com\" target=\"_blank\" rel=\"noopener\">Unsplash<\/a><\/b>, <b><a href=\"https://pexels.com\" target=\"_blank\" rel=\"noopener\">Pexels<\/a><\/b> — бесплатные фото для свободного использования."}, {"t": "info", "h": "Картинку из Pinterest берём только как пример стиля: «Возьми только цвета и стиль, рисунок и текст сделай свои»."}], "quiz": {"q": "Какая просьба даст лучший результат?", "opts": ["«Сделай открытку»", "«Ты — дизайнер. Сделай вертикальную открытку ко дню рождения, в центре крупно напиши «С днём рождения!», для отправки в WhatsApp»"], "ok": 1, "why": "Верно! Для кого, в каком формате, с каким текстом — чем точнее, тем лучше."}}, {"id": "safe", "part": "Теория", "icon": "shield", "title": "Безопасность", "blocks": [{"t": "tiles", "items": [["idcard", "Нельзя", "Паспорт, ИИН, номера документов"], ["card", "Нельзя", "Номер карты, коды из SMS, пароли"], ["heart", "Нельзя", "Медицинские заключения"], ["users", "Нельзя", "Фото и данные других людей без согласия"]], "neg": true}, {"t": "steps", "items": ["Совпадают ли даты, время и адрес с оригиналом?", "Нет ли того, чего не было в документе?", "Правильно ли написаны надписи на картинке?"]}, {"t": "info", "h": "ChatGPT — помощник, а не начальник. Он предлагает, а решаем мы."}], "quiz": {"q": "Что можно загрузить в ChatGPT?", "opts": ["Фото паспорта", "Фото банковской карты", "Объявление о концерте со стенда"], "ok": 2, "why": "Верно! Объявление без личных данных — безопасно."}}, {"id": "p1", "part": "Практика", "icon": "image", "title": "Меняем картинку", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Откройте картинку и сохраните в телефон (нажмите и удерживайте — «Сохранить»)."}, {"t": "dl", "href": "/lessons/m2/stol_cvety.png", "label": "Открыть картинку со столом"}, {"t": "steps", "items": ["В ChatGPT нажмите <b>«+»<\/b> → «Фото» → выберите сохранённую картинку.", "Скопируйте промпт и отправьте."]}, {"t": "prompt", "text": "Измени это изображение: поменяй цвет цветов с красного на жёлтый, добавь на стол небольшую подарочную коробку и сделай фон праздничным. Сохрани основную композицию изображения."}, {"t": "task", "id": "p1a", "label": "Изменил(а) картинку"}, {"t": "prompt", "text": "Сделай изображение более светлым, используй тёплые цвета и улучши его качество."}, {"t": "task", "id": "p1b", "label": "Попросил(а) улучшить"}, {"t": "info", "h": "У всех получилось одинаково? Нет — ИИ каждый раз рисует немного по-своему. Если нужное изменение не выполнено — уточните запрос.", "i": "thinking"}, {"t": "p", "h": "<b>Б. Своё задание.<\/b> Сфотографируйте что-то рядом с собой и замените слова в скобках:"}, {"t": "prompt", "text": "Измени это изображение: [что поменять], [что добавить], [какой сделать фон]. Сохрани основную композицию."}, {"t": "task", "id": "p1c", "label": "Изменил(а) своё фото"}]}, {"id": "p2", "part": "Практика", "icon": "gift", "title": "Создаём открытку", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Нажмите «Новый чат» и отправьте:"}, {"t": "prompt", "text": "Создай красивую поздравительную открытку ко дню рождения. Добавь цветы, подарочную коробку и лёгкие золотистые узоры. В центре крупными и хорошо читаемыми буквами напиши: «С днём рождения!». Дизайн должен быть тёплым, элегантным и предназначенным для взрослого человека. Сделай открытку в вертикальном формате."}, {"t": "task", "id": "p2a", "label": "Открытка готова"}, {"t": "prompt", "text": "Добавь в нижней части открытки надпись: «С уважением, ваши коллеги». Остальной дизайн не изменяй."}, {"t": "warn", "h": "Проверьте надпись! ИИ часто ошибается в буквах, особенно в казахских. Если есть ошибка:", "i": "pen"}, {"t": "prompt", "text": "Не изменяй дизайн открытки. Исправь надпись и напиши её точно так: «С днём рождения!»"}, {"t": "task", "id": "p2b", "label": "Проверил(а) надпись"}, {"t": "p", "h": "<b>Б. Своя открытка:<\/b> юбилей, Наурыз, новоселье, День учителя. Замените слова в скобках:"}, {"t": "prompt", "text": "Создай красивую поздравительную открытку [к юбилею]. Добавь [что нарисовать]. В центре крупно напиши: «[ваш текст]». Дизайн тёплый и элегантный, для взрослого человека, вертикальный формат."}, {"t": "task", "id": "p2c", "label": "Создал(а) свою открытку и сохранил(а) в телефон"}]}, {"id": "p3", "part": "Практика", "icon": "file", "title": "Работа с документом", "blocks": [{"t": "p", "h": "<b>А. Образец.<\/b> Скачайте документ:"}, {"t": "dl", "href": "/lessons/m2/Plan_meropriyatiy_RU.docx", "dl": true, "label": "Скачать план мероприятий", "note": "Файл попадёт в папку «Загрузки» телефона"}, {"t": "steps", "items": ["«Новый чат» → <b>«+»<\/b> → «Файлы» → выберите документ.", "Отправляйте промпты по очереди."]}, {"t": "prompt", "text": "Прочитай прикреплённый документ. Простыми словами изложи его основное содержание в пяти пунктах. Отдельно укажи важные даты, время и место проведения."}, {"t": "task", "id": "p3a", "label": "Получил(а) пересказ"}, {"t": "prompt", "text": "На основе этого документа подготовь короткое и понятное сообщение для отправки в группу WhatsApp."}, {"t": "prompt", "text": "Представь информацию из документа в виде таблицы с двумя столбцами: «Важная информация» и «Что необходимо сделать»."}, {"t": "task", "id": "p3b", "label": "Получил(а) сообщение и таблицу"}, {"t": "warn", "h": "Сверьте с документом: дата, время, место верны? Если сомневаетесь: «Ответь только на основе прикреплённого документа. Если информации нет, напиши: «В документе этого нет»».", "i": "search"}, {"t": "p", "h": "<b>Б. Своё задание.<\/b> Сфотографируйте текст без личных данных (объявление, инструкцию, рецепт) и прикрепите через «+»:"}, {"t": "prompt", "text": "Прочитай текст на фотографии и объясни простыми словами в трёх пунктах, что здесь написано и что мне нужно сделать."}, {"t": "task", "id": "p3c", "label": "Разобрал(а) свой текст"}]}]}</script>
 <script>
 const D=JSON.parse(document.getElementById('data').textContent), T=D.ui, L=D.levels;
+const IC={
+bot:'<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 4h6M2 13v3M22 13v3"/><circle cx="9" cy="14" r="1.2"/><circle cx="15" cy="14" r="1.2"/>',
+phone:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v6m-3-3 3 3 3-3M10.5 18h3"/>',
+key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9m-4 4 3 3m-6-1 2 2"/>',
+compass:'<circle cx="12" cy="12" r="10"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5z"/>',
+chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5.1A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>',
+sparkle:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15v4M17 17h4M5 3v3M3.5 4.5h3"/>',
+shield:'<path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/>',
+image:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8c-1.5-3.5-5-4-5-1.5S10 8 12 8zm0 0c1.5-3.5 5-4 5-1.5S14 8 12 8z"/>',
+file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+trophy:'<path d="M8 21h8M12 16v5M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+lock:'<rect x="4.5" y="11" width="15" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/>',
+copy:'<rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>',
+check:'<path d="M20 6 9 17l-5-5"/>',down:'<path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/>',open:'<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+map:'<path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3z"/><path d="M9 3v15M15 6v15"/>',arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',redo:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/>',help:'<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+heart:'<path d="M20.8 8.6a5 5 0 0 0-8.8-3.2 5 5 0 0 0-8.8 3.2c0 5.4 8.8 11.4 8.8 11.4s8.8-6 8.8-11.4z"/>',
+mail:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3 7 9 6 9-6"/>',food:'<path d="M7 2v20M4 2v6a3 3 0 0 0 6 0V2M17 2c-2 2-3 5-3 8h4v12"/>',
+globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>',bulb:'<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/>',
+idcard:'<rect x="2" y="5" width="20" height="14" rx="2.5"/><circle cx="8" cy="12" r="2"/><path d="M14 10h5M14 14h4"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20M6 15h4"/>',
+users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-5-6.7"/>',
+pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+ruler:'<path d="M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4z"/><path d="m7.5 10.5 2 2M10.5 7.5l2 2M13.5 4.5l2 2M4.5 13.5l2 2"/>',
+quote:'<path d="M3 21c3 0 7-1 7-8V5H3v7h4c0 4-2 6-4 6zM14 21c3 0 7-1 7-8V5h-7v7h4c0 4-2 6-4 6z"/>',ban:'<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+one:'<path d="M10 7l3-2v14M10 19h6"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+mask:'<path d="M2 10s3-3 10-3 10 3 10 3v2a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8z"/><path d="M8 13h.01M16 13h.01"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',pin:'<path d="M12 17v5M5 17h14l-2-4V4H7v9z"/>',laptop:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/>',
+thinking:'<circle cx="12" cy="12" r="10"/><path d="M8 15h8M9 9h.01M15 9h.01"/>'};
+const ic=(n,c='i')=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||IC.info}</svg>`;
+const STAR='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z" stroke-width="1.6"/></svg>';
+const ORN='<svg class="orn" viewBox="0 0 200 200" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M100 20c-30 0-40 30-20 45 15 11 35 0 30-15M100 20c30 0 40 30 20 45-15 11-35 0-30-15"/><path d="M100 180c-30 0-40-30-20-45 15-11 35 0 30 15M100 180c30 0 40-30 20-45-15-11-35 0-30 15"/><path d="M20 100c0-30 30-40 45-20 11 15 0 35-15 30M20 100c0 30 30 40 45 20 11-15 0-35-15-30"/><path d="M180 100c0-30-30-40-45-20-11 15 0 35 15 30M180 100c0 30-30 40-45 20-11-15 0-35 15-30"/><circle cx="100" cy="100" r="16"/></svg>';
 const KEY='ai-m2-game-'+D.lang;
 let S={stars:{},tasks:{},cur:null};
 try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=s=>document.querySelector(s), app=$('#app');
 const total=()=>Object.values(S.stars).reduce((a,b)=>a+b,0), max=L.length*3;
-const done=i=>S.stars[L[i].id]!=null;
-const open=i=>i===0||done(i-1);
+const done=i=>S.stars[L[i].id]!=null, open=i=>i===0||done(i-1);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const toast=(m,el)=>{const t=$('#toast');t.textContent=m;const r=(el||document.body).getBoundingClientRect();t.style.top=(r.top+scrollY-50)+'px';t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
 let ready=false;const up=()=>{if(!ready)return;try{parent.postMessage({aiGameTop:1},'*')}catch(e){}};
 const sendH=()=>{try{parent.postMessage({aiGameHeight:document.body.scrollHeight},'*')}catch(e){}};
-new ResizeObserver(sendH).observe(document.body);addEventListener('load',()=>{sendH();setTimeout(sendH,500);setTimeout(sendH,1500)});
-function starStr(n){return '★'.repeat(n)+'☆'.repeat(3-n)}
-function header(){const p=Math.round(total()/max*100);return `<div class="top"><h1>${esc(T.title)}</h1><div class="stars">⭐ ${total()} / ${max}</div></div><div class="bar"><i style="width:${p}%"></i></div>`}
-function map(){S.cur=null;save();let h=header(),part='';
- L.forEach((l,i)=>{if(l.part!==part){part=l.part;h+=`<div class="part">${esc(part)}</div>`}
-  const d=done(i),o=open(i);
-  h+=`<button class="lv ${d?'done':''}" ${o?'':'disabled'} onclick="go(${i})"><span class="ic">${o?l.icon:'🔒'}</span><span class="nm"><b>${i+1}. ${esc(l.title)}</b><small>${d?T.done:o?T.start:T.locked}</small></span><span class="st">${d?starStr(S.stars[l.id]):''}</span></button>`});
- const fin=L.every((_,i)=>done(i));
- h+=`<div class="part">🏁</div><button class="lv ${fin?'done':''}" ${fin?'':'disabled'} onclick="final()"><span class="ic">${fin?'🏅':'🔒'}</span><span class="nm"><b>${esc(T.finalTitle)}</b><small>${fin?T.start:T.finalLocked}</small></span></button>`;
- app.innerHTML=`<div class="map">${h}</div>`;scrollTo(0,0);up();sendH()}
+new ResizeObserver(sendH).observe(document.body);addEventListener('load',()=>{sendH();setTimeout(sendH,600);setTimeout(sendH,1600)});
+const stars3=n=>`<span class="stars3">${[0,1,2].map(k=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join('')}</span>`;
+function toast(n,el){const t=$('#toast');t.innerHTML=`${stars3(n)} ${esc(T.great)}`;const r=(el||document.body).getBoundingClientRect();t.style.top=(r.top+scrollY-54)+'px';t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1900)}
+function hero(){const p=Math.round(total()/max*100);return `<div class="hero">${ORN}<div class="eyebrow">${esc(T.eyebrow)}</div><h1>${esc(T.title)}</h1><div class="hrow"><span class="pill"><span class="st">${STAR}</span> <span id="sc">${total()} / ${max}</span></span><div class="prog" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div></div></div>`}
+function map(){S.cur=null;save();let h=hero(),part='',first=L.findIndex((_,i)=>open(i)&&!done(i));
+ L.forEach((l,i)=>{if(l.part!==part){if(part)h+='</div>';part=l.part;h+=`<div class="sect">${esc(part)}</div><div class="route">`}
+  const d=done(i),o=open(i),cls=(l.part===L[0].part?'th':'pr')+(d?' done':'')+(o?'':' lock')+(i===first?' now':'');
+  h+=`<button class="node ${cls}" ${o?'':'disabled'} onclick="go(${i})"><span class="med">${ic(o?(d?'check':l.icon):'lock')}</span><span class="lab"><b>${i+1}. ${esc(l.title)}</b><small>${d?stars3(S.stars[l.id]):o?esc(T.start)+' '+ic('arrow'):esc(T.locked)}</small></span></button>`});
+ h+='</div>';const fin=L.every((_,i)=>done(i));
+ h+=`<div class="sect">${esc(T.finish)}</div><div class="route"><button class="node fin ${fin?'done now':'lock'}" ${fin?'':'disabled'} onclick="final()"><span class="med">${ic(fin?'trophy':'lock')}</span><span class="lab"><b>${esc(T.finalTitle)}</b><small>${esc(fin?T.start:T.finalLocked)}</small></span></button></div>`;
+ app.innerHTML=h;scrollTo(0,0);up();sendH()}
 function blk(b,li){switch(b.t){
- case 'p':return `<div class="blk">${b.h}</div>`;
- case 'warn':return `<div class="blk warn">${b.h}</div>`;
- case 'info':return `<div class="blk info">${b.h}</div>`;
- case 'tiles':return `<div class="blk tiles">${b.items.map(x=>`<div class="tile"><div class="e">${x[0]}</div><b>${x[1]}</b><span>${x[2]}</span></div>`).join('')}</div>`;
+ case 'p':return `<div class="blk"><p>${b.h}</p></div>`;
+ case 'warn':return `<div class="blk note warn"><span class="ni">${ic(b.i||'alert')}</span><div>${b.h}</div></div>`;
+ case 'info':return `<div class="blk note info"><span class="ni">${ic(b.i||'info')}</span><div>${b.h}</div></div>`;
+ case 'tiles':return `<div class="blk tiles">${b.items.map(x=>`<div class="tile ${b.neg?'neg':''}"><span class="ti">${ic(x[0])}</span><div><b>${x[1]}</b><span>${x[2]}</span></div></div>`).join('')}</div>`;
  case 'steps':return `<div class="blk"><ol class="steps">${b.items.map(x=>`<li>${x}</li>`).join('')}</ol></div>`;
  case 'shot':{const id='s'+Math.random().toString(36).slice(2,7);
-  return `<div class="blk"><div class="shot" id="${id}" style="max-width:${b.max||360}px"><img src="${b.src}" alt="${esc(b.alt||'')}">${b.spots.map((s,k)=>`<button class="spot" style="left:${s[0]}%;top:${s[1]}%" onclick="spot('${id}',${k})">${k+1}</button>`).join('')}</div><div class="cap">${esc(b.cap||'')}</div><div class="legend" id="${id}L">${b.spots.map((s,k)=>`<button onclick="spot('${id}',${k})"><i>${k+1}</i><span>${s[2]}</span></button>`).join('')}</div></div>`}
- case 'prompt':return `<div class="blk"><div class="prompt">${esc(b.text)}</div><button class="copy" onclick="cp(this)" data-t="${esc(b.text)}">📋 ${T.copy}</button></div>`;
- case 'dl':return `<div class="blk"><a class="dl" href="${b.href}" ${b.dl?'download':''} target="_blank" rel="noopener">⬇️ ${esc(b.label)}</a>${b.note?`<div class="need">${esc(b.note)}</div>`:''}</div>`;
- case 'task':{const on=S.tasks[b.id];return `<div class="blk"><button class="task ${on?'on':''}" onclick="tk(this,'${b.id}',${li})"><span class="bx">${on?'✓':''}</span><span>${b.label}</span></button></div>`}
- case 'flips':return `<div class="blk flips">${b.items.map(x=>`<button class="flip" onclick="this.classList.toggle('on');sendH()"><b>${x[0]}</b><span class="hint">${T.flip}</span><span class="back">${x[1]}</span></button>`).join('')}</div>`;
- case 'h':return `<h3 style="margin:22px 0 6px;font-size:21px">${b.h}</h3>`;
+  return `<div class="blk"><div class="phone" style="max-width:${b.max||330}px"><div class="scr" id="${id}"><img src="${b.src}" alt="${esc(b.cap||'')}">${b.spots.map((s,k)=>`<button class="spot" style="left:${s[0]}%;top:${s[1]}%" onclick="spot('${id}',${k})" aria-label="${k+1}">${k+1}</button>`).join('')}</div></div><div class="cap">${esc(b.cap||'')}</div><div class="legend" id="${id}L">${b.spots.map((s,k)=>`<button onclick="spot('${id}',${k})"><i>${k+1}</i><span>${s[2]}</span></button>`).join('')}</div></div>`}
+ case 'prompt':return `<div class="blk"><div class="prompt">${esc(b.text)}</div><button class="act" onclick="cp(this)" data-t="${esc(b.text)}">${ic('copy')} ${esc(T.copy)}</button></div>`;
+ case 'dl':return `<div class="blk"><a class="dl" href="${b.href}" ${b.dl?'download':''} target="_blank" rel="noopener">${ic(b.dl?'down':'open')} ${esc(b.label)}</a>${b.note?`<div class="need" style="text-align:left">${esc(b.note)}</div>`:''}</div>`;
+ case 'task':{const on=S.tasks[b.id];return `<div class="blk"><button class="task ${on?'on':''}" aria-pressed="${!!on}" onclick="tk(this,'${b.id}',${li})"><span class="bx">${on?ic('check'):''}</span><span>${b.label}</span></button></div>`}
+ case 'flips':return `<div class="blk flips">${b.items.map(x=>`<button class="flip" onclick="this.classList.toggle('on');sendH()"><span class="fi">${ic(x[2]||'bulb')}</span><b>${x[0]}</b><span class="hint">${esc(T.flip)}</span><span class="back">${x[1]}</span></button>`).join('')}</div>`;
+ case 'h':return `<h3 class="sub">${b.h}</h3>`;
  }return ''}
-function go(i){if(!open(i))return;S.cur=i;save();const l=L[i];
- let h=`<div class="card"><div class="lvl">${T.level} ${i+1} / ${L.length} · ${esc(l.part)}</div><h2>${l.icon} ${esc(l.title)}</h2>`;
+function go(i){if(!open(i))return;S.cur=i;save();const l=L[i],cls=l.part===L[0].part?'th':'pr';
+ let h=`<div class="lvtop ${cls}">${ORN}<span class="big">${ic(l.icon)}</span><div><div class="eyebrow">${esc(T.level)} ${i+1} / ${L.length} · ${esc(l.part)}</div><h2>${esc(l.title)}</h2></div></div><div class="body">`;
  h+=l.blocks.map(b=>blk(b,i)).join('');
- if(l.quiz){h+=`<div class="quiz"><h3>❓ ${esc(l.quiz.q)}</h3>${l.quiz.opts.map((o,k)=>`<button class="opt" onclick="ans(this,${i},${k})">${esc(o)}</button>`).join('')}<div class="why" id="why"></div></div>`}
- h+=`<div class="nav"><button class="btn ghost" onclick="map()">🗺️ ${T.map}</button><button class="btn main" id="nx" onclick="next(${i})" ${done(i)?'':'disabled'}>${i===L.length-1?T.toFinal:T.next} →</button></div>`;
- h+=`<div class="need" id="need">${done(i)?'':(l.quiz?T.needQuiz:T.needTasks)}</div></div>`;
- app.innerHTML=header()+h;window.tries=0;scrollTo(0,0);up();sendH()}
+ if(l.quiz)h+=`<div class="quiz"><div class="qh"><span class="q">${ic('help')}</span><span>${esc(l.quiz.q)}</span></div>${l.quiz.opts.map((o,k)=>`<button class="opt" onclick="ans(this,${i},${k})"><span class="k">${'ABC'[k]}</span><span>${esc(o)}</span></button>`).join('')}<div class="why" id="why" aria-live="polite"></div></div>`;
+ h+=`<div class="nav"><button class="btn ghost" onclick="map()">${ic('map')} ${esc(T.map)}</button><button class="btn main" id="nx" onclick="next(${i})" ${done(i)?'':'disabled'}>${esc(i===L.length-1?T.toFinal:T.next)} ${ic('arrow')}</button></div><div class="need" id="need">${done(i)?'':esc(l.quiz?T.needQuiz:T.needTasks)}</div></div>`;
+ app.innerHTML=hero()+'<div style="height:14px"></div>'+h;window.tries=0;scrollTo(0,0);up();sendH()}
 function spot(id,k){document.querySelectorAll('#'+id+' .spot').forEach((s,j)=>s.classList.toggle('on',j===k));document.querySelectorAll('#'+id+'L button').forEach((s,j)=>s.classList.toggle('on',j===k))}
-function cp(b){const t=b.dataset.t;const okf=()=>{b.classList.add('ok');b.textContent='✅ '+T.copied;setTimeout(()=>{b.classList.remove('ok');b.textContent='📋 '+T.copy},1800)};
- if(navigator.clipboard&&isSecureContext){navigator.clipboard.writeText(t).then(okf,()=>fb())}else fb();
- function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');okf()}catch(e){}a.remove()}}
-function tk(b,id,i){S.tasks[id]=!S.tasks[id];b.classList.toggle('on',!!S.tasks[id]);b.querySelector('.bx').textContent=S.tasks[id]?'✓':'';
+function cp(b){const t=b.dataset.t;const okf=()=>{b.classList.add('ok');b.innerHTML=ic('check')+' '+esc(T.copied);setTimeout(()=>{b.classList.remove('ok');b.innerHTML=ic('copy')+' '+esc(T.copy)},1800)};
+ const fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');okf()}catch(e){}a.remove()};
+ if(navigator.clipboard&&isSecureContext)navigator.clipboard.writeText(t).then(okf,fb);else fb()}
+const setPill=()=>{const p=$('#sc');if(p)p.textContent=total()+' / '+max;const g=document.querySelector('.prog i');if(g)g.style.width=Math.round(total()/max*100)+'%'};
+function tk(b,id,i){S.tasks[id]=!S.tasks[id];b.classList.toggle('on',!!S.tasks[id]);b.setAttribute('aria-pressed',!!S.tasks[id]);b.querySelector('.bx').innerHTML=S.tasks[id]?ic('check'):'';
  const l=L[i],ids=l.blocks.filter(x=>x.t==='task').map(x=>x.id),n=ids.filter(x=>S.tasks[x]).length;
- if(!l.quiz){if(n===ids.length){if(S.stars[l.id]==null)toast('⭐⭐⭐ '+T.great,b);S.stars[l.id]=3;$('#nx').disabled=false;$('#need').textContent=''}else{delete S.stars[l.id];$('#nx').disabled=true;$('#need').textContent=T.needTasks}}
- save();const st=document.querySelector('.stars');if(st)st.textContent='⭐ '+total()+' / '+max}
+ if(!l.quiz){if(n===ids.length){if(S.stars[l.id]==null)toast(3,b);S.stars[l.id]=3;$('#nx').disabled=false;$('#need').textContent=''}else{delete S.stars[l.id];$('#nx').disabled=true;$('#need').textContent=T.needTasks}}
+ save();setPill()}
 function ans(b,i,k){const l=L[i],q=l.quiz;if(document.querySelector('.opt.ok'))return;
  if(k===q.ok){b.classList.add('ok');const s=Math.max(1,3-window.tries);if(S.stars[l.id]==null||S.stars[l.id]<s)S.stars[l.id]=s;save();
-  $('#why').innerHTML='✅ '+esc(q.why);$('#nx').disabled=false;$('#need').textContent='';toast(starStr(S.stars[l.id])+' '+T.great,b);document.querySelector('.stars').textContent='⭐ '+total()+' / '+max}
- else{window.tries++;b.classList.add('bad');$('#why').innerHTML='🙂 '+esc(T.tryAgain);setTimeout(()=>b.classList.remove('bad'),600)}sendH()}
+  $('#why').textContent=q.why;$('#nx').disabled=false;$('#need').textContent='';toast(S.stars[l.id],b);setPill()}
+ else{window.tries++;b.classList.add('bad');$('#why').textContent=T.tryAgain;setTimeout(()=>b.classList.remove('bad'),600)}sendH()}
 function next(i){if(i<L.length-1)go(i+1);else final()}
 function final(){if(!L.every((_,i)=>done(i)))return map();
- app.innerHTML=header()+`<div class="card final"><div class="badge"><div>🏅</div></div><h2>${esc(T.finalTitle)}</h2><p>${T.finalText.replace('{s}',total()).replace('{m}',max)}</p><div class="info" style="text-align:left">${T.homework}</div><div class="nav"><button class="btn ghost" onclick="map()">🗺️ ${T.map}</button><button class="btn ghost" onclick="if(confirm('${esc(T.resetQ)}')){S={stars:{},tasks:{},cur:null};save();map()}">↺ ${T.reset}</button></div></div>`;scrollTo(0,0);up();sendH()}
+ app.innerHTML=hero()+`<div style="height:14px"></div><div class="body final"><div class="cup">${ic('trophy')}</div><h2>${esc(T.finalTitle)}</h2><p>${esc(T.finalText.replace('{s}',total()).replace('{m}',max))}</p><div class="blk note info" style="text-align:left"><span class="ni">${ic('pen')}</span><div>${T.homework}</div></div><div class="nav"><button class="btn ghost" onclick="map()">${ic('map')} ${esc(T.map)}</button><button class="btn ghost" onclick="if(confirm('${esc(T.resetQ)}')){S={stars:{},tasks:{},cur:null};save();map()}">${ic('redo')} ${esc(T.reset)}</button></div></div>`;
+ scrollTo(0,0);up();sendH();confetti()}
+function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const c=document.createElement('canvas');c.id='cf';const W=c.width=innerWidth,H=c.height=Math.min(document.body.scrollHeight,900);c.style.height=H+'px';document.body.appendChild(c);const x=c.getContext('2d');
+ const cols=['#E9A824','#3657E8','#0EA5A0','#7B61FF','#E0569B'],P=Array.from({length:120},()=>({x:W/2,y:H*0.3,vx:(Math.random()-.5)*9,vy:-Math.random()*9-3,s:Math.random()*6+4,c:cols[Math.random()*5|0],r:Math.random()*6}));let f=0;
+ (function tick(){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.25;p.x+=p.vx;p.y+=p.vy;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<150)requestAnimationFrame(tick);else c.remove()})()}
 if(S.cur!=null&&open(S.cur))go(S.cur);else map();ready=true;
 </script>
 </body>

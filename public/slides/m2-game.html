@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Занятие 2: ChatGPT — микрокурс-игра</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,500;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#1B2350;--soft:#56607F;--line:#E1E6F0;--bg:#F3F5FA;--paper:#fff;--teal:#0EA5A0;--blue:#3657E8;--violet:#7B61FF;--gold:#E9A824;--goldl:#FFF4D6;--ok:#12A15E;--bad:#E0473B;
- --disp:"Unbounded",system-ui,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--r:22px;--sh:0 1px 2px rgba(27,35,80,.06),0 8px 24px rgba(27,35,80,.07)}
+ --disp:"Nunito Sans",system-ui,sans-serif;--body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--r:22px;--sh:0 1px 2px rgba(27,35,80,.06),0 8px 24px rgba(27,35,80,.07)}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.55;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -20,7 +20,7 @@ svg.i{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-l
 .orn{position:absolute;opacity:.15;pointer-events:none}
 .hero .orn{right:-30px;top:-30px;width:190px}
 .eyebrow{font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
-.hero h1{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1.2;margin:6px 0 14px;max-width:720px}
+.hero h1{font-family:var(--disp);font-weight:900;font-size:26px;line-height:1.2;margin:6px 0 14px;max-width:720px}
 .hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:7px 14px;font-weight:800}
 .pill .st svg{color:#FFD166;fill:#FFD166}
@@ -53,7 +53,7 @@ svg.i{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-l
 .lvtop.pr{background:linear-gradient(135deg,#7B61FF,#D9468F)}
 .lvtop .orn{right:-40px;bottom:-50px;width:180px}
 .lvtop .big{width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:38px;flex-shrink:0}
-.lvtop h2{font-family:var(--disp);font-weight:700;font-size:24px;line-height:1.2;margin:4px 0 0}
+.lvtop h2{font-family:var(--disp);font-weight:900;font-size:24px;line-height:1.2;margin:4px 0 0}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .body{background:var(--paper);border-radius:var(--r);box-shadow:var(--sh);padding:6px 20px 20px;margin-top:14px;animation:rise .6s .05s both cubic-bezier(.2,.8,.2,1)}
 .blk{margin:18px 0}
@@ -103,7 +103,7 @@ ol.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:38
 .flip .hint{font-size:14px;color:var(--violet);font-weight:800;margin-top:auto}
 .flip.on{background:#F1EEFF;border-color:var(--violet)}
 .flip.on .back{display:block}.flip.on .hint{display:none}
-h3.sub{font-family:var(--disp);font-weight:600;font-size:18px;margin:24px 0 8px}
+h3.sub{font-family:var(--disp);font-weight:800;font-size:18px;margin:24px 0 8px}
 .quiz{margin-top:24px;border-radius:22px;padding:18px;background:linear-gradient(180deg,#F1EEFF,#F5F7FF)}
 .quiz .qh{display:flex;gap:10px;align-items:flex-start;font-weight:800;font-size:19px;margin-bottom:6px}
 .quiz .qh .q{color:var(--violet);font-size:24px;line-height:1;margin-top:2px}
@@ -125,7 +125,7 @@ h3.sub{font-family:var(--disp);font-weight:600;font-size:18px;margin:24px 0 8px}
 .final{text-align:center;padding:26px 20px}
 .cup{width:150px;height:150px;margin:6px auto 10px;border-radius:50%;display:grid;place-items:center;font-size:72px;color:#fff;background:radial-gradient(circle at 35% 30%,#FFE08A,#E9A824 55%,#B97300);box-shadow:0 14px 34px rgba(233,168,36,.45),inset 0 0 0 8px rgba(255,255,255,.35);animation:pop .9s cubic-bezier(.2,1.4,.4,1)}
 @keyframes pop{0%{transform:scale(.2) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}
-.final h2{font-family:var(--disp);font-weight:700;font-size:24px;line-height:1.25;margin:8px 0}
+.final h2{font-family:var(--disp);font-weight:900;font-size:24px;line-height:1.25;margin:8px 0}
 canvas#cf{position:absolute;left:0;top:0;width:100%;pointer-events:none}
 .toast{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;font-weight:800;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;white-space:nowrap}
 .toast.on{opacity:1}

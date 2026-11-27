@@ -17,8 +17,8 @@ a{color:var(--blue)}
 svg.i{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .wrap{max-width:1180px;margin:0 auto;padding:16px 12px 28px}
 .hero{position:relative;overflow:hidden;border-radius:28px;padding:22px 22px 20px;color:#fff;background:radial-gradient(120% 140% at 100% 0%,#7B61FF 0%,#3657E8 45%,#1B2350 100%);box-shadow:var(--sh)}
-.orn{position:absolute;opacity:.15;pointer-events:none}
-.hero .orn{right:-30px;top:-30px;width:190px}
+.orn{position:absolute;opacity:.22;pointer-events:none}
+.hero .orn{right:-10px;top:-14px;width:230px}
 .eyebrow{font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
 .hero h1{font-family:var(--disp);font-weight:900;font-size:26px;line-height:1.2;margin:6px 0 14px;max-width:720px}
 .hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -51,7 +51,7 @@ svg.i{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-l
 .lvtop{position:relative;overflow:hidden;border-radius:28px;padding:22px;color:#fff;display:flex;gap:16px;align-items:center;box-shadow:var(--sh);animation:rise .5s cubic-bezier(.2,.8,.2,1)}
 .lvtop.th{background:linear-gradient(135deg,#0EA5A0,#3657E8)}
 .lvtop.pr{background:linear-gradient(135deg,#7B61FF,#D9468F)}
-.lvtop .orn{right:-40px;bottom:-50px;width:180px}
+.lvtop .orn{right:-10px;top:-30px;width:200px}
 .lvtop .big{width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:38px;flex-shrink:0}
 .lvtop h2{font-family:var(--disp);font-weight:900;font-size:24px;line-height:1.2;margin:4px 0 0}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -171,7 +171,7 @@ search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',pin:'<path d=
 thinking:'<circle cx="12" cy="12" r="10"/><path d="M8 15h8M9 9h.01M15 9h.01"/>'};
 const ic=(n,c='i')=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||IC.info}</svg>`;
 const STAR='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z" stroke-width="1.6"/></svg>';
-const ORN='<svg class="orn" viewBox="0 0 200 200" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M100 20c-30 0-40 30-20 45 15 11 35 0 30-15M100 20c30 0 40 30 20 45-15 11-35 0-30-15"/><path d="M100 180c-30 0-40-30-20-45 15-11 35 0 30 15M100 180c30 0 40-30 20-45-15-11-35 0-30 15"/><path d="M20 100c0-30 30-40 45-20 11 15 0 35-15 30M20 100c0 30 30 40 45 20 11-15 0-35-15-30"/><path d="M180 100c0-30-30-40-45-20-11 15 0 35 15 30M180 100c0 30-30 40-45 20-11-15 0-35 15-30"/><circle cx="100" cy="100" r="16"/></svg>';
+const ORN='<svg class="orn" viewBox="0 0 220 200" fill="none" aria-hidden="true"><g stroke="#fff" stroke-width="2" opacity=".9"><path d="M40 60 L95 35 L150 70 L195 40 M95 35 L110 105 L150 70 M40 60 L60 130 L110 105 L170 140 L150 70 M60 130 L120 175 L170 140 M110 105 L120 175 M195 40 L205 110 L170 140"/></g><g fill="#fff"><circle cx="40" cy="60" r="6"/><circle cx="95" cy="35" r="8"/><circle cx="150" cy="70" r="7"/><circle cx="195" cy="40" r="5"/><circle cx="110" cy="105" r="10"/><circle cx="60" cy="130" r="6"/><circle cx="170" cy="140" r="8"/><circle cx="120" cy="175" r="6"/><circle cx="205" cy="110" r="5"/></g><g fill="#fff"><path d="M30 165l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/><path d="M200 175l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M70 15l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g></svg>';
 const KEY=(D.key||'ai-m2-game')+'-'+D.lang;
 let S={stars:{},tasks:{},cur:null};
 try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}

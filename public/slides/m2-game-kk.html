@@ -172,7 +172,7 @@ thinking:'<circle cx="12" cy="12" r="10"/><path d="M8 15h8M9 9h.01M15 9h.01"/>'}
 const ic=(n,c='i')=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||IC.info}</svg>`;
 const STAR='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z" stroke-width="1.6"/></svg>';
 const ORN='<svg class="orn" viewBox="0 0 200 200" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M100 20c-30 0-40 30-20 45 15 11 35 0 30-15M100 20c30 0 40 30 20 45-15 11-35 0-30-15"/><path d="M100 180c-30 0-40-30-20-45 15-11 35 0 30 15M100 180c30 0 40-30 20-45-15-11-35 0-30 15"/><path d="M20 100c0-30 30-40 45-20 11 15 0 35-15 30M20 100c0 30 30 40 45 20 11-15 0-35-15-30"/><path d="M180 100c0-30-30-40-45-20-11 15 0 35 15 30M180 100c0 30-30 40-45 20-11-15 0-35 15-30"/><circle cx="100" cy="100" r="16"/></svg>';
-const KEY='ai-m2-game-'+D.lang;
+const KEY=(D.key||'ai-m2-game')+'-'+D.lang;
 let S={stars:{},tasks:{},cur:null};
 try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};

@@ -26,7 +26,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
   const { data: lessonRow } = await supabase.from('lessons').select('course_id').eq('id', id).maybeSingle();
   if (!lessonRow) notFound(); // нет урока или нет доступа (RLS)
 
-  const { course, tree, flat } = await getCourseTree(supabase, lessonRow.course_id);
+  const { course, tree, flat } = await getCourseTree(supabase, lessonRow.course_id, profile.role !== 'admin');
   const lesson = flat.find((l) => l.id === id);
   if (!course || !lesson) notFound();
   const idx = flat.findIndex((l) => l.id === id);

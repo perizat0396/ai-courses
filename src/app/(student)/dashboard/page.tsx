@@ -1,3 +1,4 @@
+import { isDraft } from '@/lib/draft';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { getDict, pick } from '@/lib/i18n';
@@ -18,10 +19,10 @@ export default async function Dashboard() {
   const courses = (coursesRaw ?? []) as Course[];
 
   const { data: lessonsRaw } = courses.length
-    ? await supabase.from('lessons').select('id,course_id,module_id,title_ru,title_kk,position,modules(position)').in('course_id', courses.map((c) => c.id))
+    ? await supabase.from('lessons').select('id,course_id,module_id,title_ru,title_kk,position,content_ru,modules(position)').in('course_id', courses.map((c) => c.id))
     : { data: [] };
   type L = Pick<Lesson, 'id' | 'course_id' | 'title_ru' | 'title_kk' | 'position'> & { modules: { position: number } | null };
-  const lessons = ((lessonsRaw ?? []) as unknown as L[]).sort(
+  const lessons = ((lessonsRaw ?? []) as unknown as (L & { content_ru: string })[]).filter((l) => profile.role === 'admin' || !isDraft(l)).sort(
     (a, b) => (a.modules?.position ?? 0) - (b.modules?.position ?? 0) || a.position - b.position,
   );
   const done = await getDoneSet(supabase, profile.id);

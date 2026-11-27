@@ -1,9 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Course, Lesson, Module } from './types';
+import { isDraft } from './draft';
 
 export type ModuleWithLessons = Module & { lessons: Lesson[] };
 
-export async function getCourseTree(supabase: SupabaseClient, courseId: string) {
+export async function getCourseTree(supabase: SupabaseClient, courseId: string, hideDrafts = false) {
   const [{ data: course }, { data: modules }, { data: lessons }] = await Promise.all([
     supabase.from('courses').select('*').eq('id', courseId).maybeSingle(),
     supabase.from('modules').select('*').eq('course_id', courseId).order('position'),
@@ -11,7 +12,7 @@ export async function getCourseTree(supabase: SupabaseClient, courseId: string) 
   ]);
   const tree: ModuleWithLessons[] = (modules ?? []).map((m) => ({
     ...(m as Module),
-    lessons: ((lessons ?? []) as Lesson[]).filter((l) => l.module_id === m.id),
+    lessons: ((lessons ?? []) as Lesson[]).filter((l) => l.module_id === m.id && !(hideDrafts && isDraft(l))),
   }));
   const flat = tree.flatMap((m) => m.lessons);
   return { course: course as Course | null, tree, flat };

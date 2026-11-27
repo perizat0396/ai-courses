@@ -1,3 +1,4 @@
+import { isDraft } from '@/lib/draft';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
@@ -81,6 +82,7 @@ export default async function AdminCourse({ params }: { params: Promise<{ id: st
                   <Link href={`/admin/lessons/${l.id}`} className="flex flex-1 items-center gap-3 text-sm font-semibold hover:underline">
                     <IconEdit className="h-4 w-4 text-ink-mute" />{T(l)}
                     {!l.title_kk && <span className="chip bg-red-50 text-red-600">{L('нет KZ', 'KZ жоқ')}</span>}
+                    {isDraft(l) && <span className="chip bg-amber-50 text-amber-700">{L('скрыт от студентов', 'студенттерден жасырын')}</span>}
                     {!l.content_ru && !l.video_url && !l.video_path && <span className="chip bg-canvas text-ink-mute">{L('пустой', 'бос')}</span>}
                   </Link>
                   <form action={moveLesson.bind(null, l.id, -1)}><button className="p-1 text-ink-mute hover:text-ink"><IconUp className="h-4 w-4" /></button></form>

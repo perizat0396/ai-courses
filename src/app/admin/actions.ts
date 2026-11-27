@@ -1,4 +1,5 @@
 'use server';
+import { setDraft } from '@/lib/draft';
 import { getLang } from '@/lib/i18n';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -98,7 +99,7 @@ export async function updateLesson(id: string, f: FormData) {
     module_id: s(f, 'module_id'),
     video_url: s(f, 'video_url') || null,
     duration_min: Number.isFinite(dur) ? dur : null,
-    content_ru: String(f.get('content_ru') ?? ''), content_kk: String(f.get('content_kk') ?? ''),
+    content_ru: setDraft(String(f.get('content_ru') ?? ''), f.get('hidden') === 'on'), content_kk: String(f.get('content_kk') ?? ''),
     assignment_ru: s(f, 'assignment_ru'), assignment_kk: s(f, 'assignment_kk'),
   }).eq('id', id);
   if (error) throw new Error(error.message);

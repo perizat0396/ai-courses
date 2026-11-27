@@ -1,3 +1,4 @@
+import { stripDraft } from '@/lib/draft';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyPre } from './CopyPre';
@@ -24,7 +25,8 @@ function Md({ children }: { children: string }) {
   );
 }
 
-export function Markdown({ children }: { children: string }) {
+export function Markdown({ children: raw }: { children: string }) {
+  const children = stripDraft(raw);
   const parts: { kind: 'md' | 'slides' | 'game'; value: string }[] = [];
   let last = 0;
   for (const m of children.matchAll(SLIDES_RE)) {

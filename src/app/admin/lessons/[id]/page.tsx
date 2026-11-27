@@ -1,3 +1,4 @@
+import { isDraft, stripDraft } from '@/lib/draft';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
@@ -47,6 +48,7 @@ export default async function AdminLesson({ params }: { params: Promise<{ id: st
               {((modules ?? []) as Module[]).map((m) => <option key={m.id} value={m.id}>{T(m)}</option>)}
             </select>
           </div>
+          <label className="flex items-center gap-2 font-semibold md:col-span-2"><input type="checkbox" name="hidden" defaultChecked={isDraft(lesson)} className="h-5 w-5" /> {L('Скрыть урок от студентов (черновик)', 'Сабақты студенттерден жасыру (жоба)')}</label>
           <div><label className="label">{L('Длительность, мин', 'Ұзақтығы, мин')}</label><input name="duration_min" type="number" min={0} defaultValue={lesson.duration_min ?? ''} className="input" /></div>
         </div>
 
@@ -57,7 +59,7 @@ export default async function AdminLesson({ params }: { params: Promise<{ id: st
           <div className="mt-3"><VideoUploader lessonId={id} current={lesson.video_path} kk={kk} /></div>
         </div>
 
-        <Bilingual name="content" label={L('Текст урока', 'Сабақ мәтіні')} uiKk={kk} ru={lesson.content_ru} kk={lesson.content_kk} rows={16}
+        <Bilingual name="content" label={L('Текст урока', 'Сабақ мәтіні')} uiKk={kk} ru={stripDraft(lesson.content_ru)} kk={lesson.content_kk} rows={16}
           hint={L('Markdown: ## заголовок, **жирный**, - список, ![](ссылка на картинку)', 'Markdown: ## тақырып, **қалың**, - тізім, ![](сурет сілтемесі)')} />
         <Bilingual name="assignment" label={L('Задание (пусто — без задания)', 'Тапсырма (бос болса — тапсырмасыз)')} uiKk={kk} ru={lesson.assignment_ru} kk={lesson.assignment_kk} rows={5} />
 

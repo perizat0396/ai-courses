@@ -10,7 +10,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
   const { id } = await params;
   const { supabase, profile } = await requireUser();
   const { lang, t } = await getDict();
-  const { course, tree, flat } = await getCourseTree(supabase, id);
+  const { course, tree, flat } = await getCourseTree(supabase, id, profile.role !== 'admin');
   if (!course) notFound();
   const done = await getDoneSet(supabase, profile.id);
   const d = flat.filter((l) => done.has(l.id)).length;

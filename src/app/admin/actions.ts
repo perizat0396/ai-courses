@@ -85,6 +85,7 @@ export async function addLesson(moduleId: string, f: FormData) {
   const { data: last } = await supabase.from('lessons').select('position').eq('module_id', moduleId).order('position', { ascending: false }).limit(1).maybeSingle();
   const { data, error } = await supabase.from('lessons').insert({
     module_id: moduleId, course_id: mod?.course_id, title_ru: s(f, 'title_ru') || 'Новый урок', position: (last?.position ?? 0) + 1,
+    content_ru: '::draft\n', // новые уроки скрыты от студентов, пока их не откроют
   }).select('id').single();
   if (error) throw new Error(error.message);
   done();

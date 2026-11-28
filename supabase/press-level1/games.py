@@ -524,11 +524,4 @@ def build(tpl_name, data, key, lang, out):
     n = sum(1 for l in data['levels'] for b in l['blocks'] if b['t'] == 'h')
     print(out, len(data['levels']), 'уровней,', n, 'экранов')
 
-assert len(G1_RU['levels']) == len(G1_KK['levels']) and len(G2_RU['levels']) == len(G2_KK['levels'])
-for a, b in [(G1_RU, G1_KK), (G2_RU, G2_KK)]:
-    for x, y in zip(a['levels'], b['levels']):
-        assert [k['t'] for k in x['blocks']] == [k['t'] for k in y['blocks']], x['id']
-build('m4g-game.html', G1_RU, 'press-l1-game', 'ru', 'press-l1-game.html')
-build('m4g-game-kk.html', G1_KK, 'press-l1-game', 'kk', 'press-l1-game-kk.html')
-build('m4g-game.html', G2_RU, 'press-l2-game', 'ru', 'press-l2-game.html')
-build('m4g-game-kk.html', G2_KK, 'press-l2-game', 'kk', 'press-l2-game-kk.html')
+exec(open(pathlib.Path(__file__).with_name('claude_game.py'), encoding='utf-8').read())

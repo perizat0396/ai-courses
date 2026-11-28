@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Занятие 2. Claude от А до Я</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,500;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2350;--soft:#56607F;--line:#E1E6F0;--bg:#F3F5FA;--paper:#fff;--teal:#0EA5A0;--blue:#3657E8;--violet:#7B61FF;--gold:#E9A824;--goldl:#FFF4D6;--ok:#12A15E;--bad:#E0473B;
+ --disp:"Nunito Sans",system-ui,sans-serif;--body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--r:22px;--sh:0 1px 2px rgba(27,35,80,.06),0 8px 24px rgba(27,35,80,.07)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--violet);outline-offset:3px;border-radius:12px}
+svg.i{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 12px 28px}
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:22px 22px 20px;color:#fff;background:radial-gradient(120% 140% at 100% 0%,#7B61FF 0%,#3657E8 45%,#1B2350 100%);box-shadow:var(--sh)}
+.orn{position:absolute;opacity:.22;pointer-events:none}
+.hero .orn{right:-10px;top:-14px;width:230px}
+.eyebrow{font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.hero h1{font-family:var(--disp);font-weight:900;font-size:26px;line-height:1.2;margin:6px 0 14px;max-width:720px}
+.hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:7px 14px;font-weight:800}
+.pill .st svg{color:#FFD166;fill:#FFD166}
+.prog{flex:1;min-width:160px;height:10px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#FFD166,#E9A824);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.sect{display:flex;align-items:center;gap:10px;margin:26px 4px 8px;font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.sect::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+.route{position:relative;padding-left:8px}
+.route::before{content:"";position:absolute;left:43px;top:30px;bottom:30px;width:4px;border-radius:4px;background:repeating-linear-gradient(180deg,#CCD4E6 0 10px,transparent 10px 18px)}
+.node{position:relative;display:flex;align-items:center;gap:16px;width:100%;background:none;border:0;padding:8px 0;text-align:left}
+.med{position:relative;z-index:1;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:30px;color:#fff;flex-shrink:0;box-shadow:0 6px 16px rgba(27,35,80,.18);border:4px solid #fff;transition:transform .25s}
+.th .med{background:linear-gradient(145deg,#19C3BC,#3657E8)}
+.pr .med{background:linear-gradient(145deg,#9B7BFF,#E0569B)}
+.node.done .med{background:linear-gradient(145deg,#F6C24A,#E08E0B)}
+.node.lock .med{background:#DCE1EC;color:#9AA3BA;box-shadow:none}
+.node.now .med::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:3px solid var(--gold);animation:ring 1.8s ease-out infinite}
+@keyframes ring{0%{transform:scale(.9);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.node:not(.lock):hover .med{transform:scale(1.06)}
+.lab{flex:1;background:var(--paper);border-radius:18px;padding:12px 16px;box-shadow:var(--sh);border:2px solid transparent}
+.node.now .lab{border-color:var(--gold)}
+.node.lock .lab{background:#F7F8FB;box-shadow:none;color:#98A0B6}
+.lab b{display:block;font-weight:800;font-size:18px;line-height:1.3}
+.lab small{display:flex;align-items:center;gap:6px;color:var(--soft);font-size:15px;margin-top:3px}
+.stars3{display:inline-flex;gap:2px;font-size:18px}
+.stars3 .on svg{color:var(--gold);fill:var(--gold)}
+.stars3 .off svg{color:#CDD3E1}
+.node.fin .med{width:84px;height:84px;font-size:36px;margin-left:-6px}
+.lvtop{position:relative;overflow:hidden;border-radius:28px;padding:22px;color:#fff;display:flex;gap:16px;align-items:center;box-shadow:var(--sh);animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+.lvtop.th{background:linear-gradient(135deg,#0EA5A0,#3657E8)}
+.lvtop.pr{background:linear-gradient(135deg,#7B61FF,#D9468F)}
+.lvtop .orn{right:-10px;top:-30px;width:200px}
+.lvtop .big{width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:38px;flex-shrink:0}
+.lvtop h2{font-family:var(--disp);font-weight:900;font-size:24px;line-height:1.2;margin:4px 0 0}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.body{background:var(--paper);border-radius:var(--r);box-shadow:var(--sh);padding:6px 20px 20px;margin-top:14px;animation:rise .6s .05s both cubic-bezier(.2,.8,.2,1)}
+.blk{margin:18px 0}
+.blk p{margin:0}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tiles.c2{grid-template-columns:repeat(2,1fr)}@media (max-width:820px){.tiles{grid-template-columns:repeat(2,1fr)}}@media (max-width:520px){.tiles,.tiles.c2{grid-template-columns:1fr}}
+.tile{display:flex;gap:12px;align-items:flex-start;background:var(--bg);border-radius:16px;padding:12px 14px}
+.tile .ti{width:42px;height:42px;border-radius:12px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:22px;flex-shrink:0;box-shadow:0 2px 6px rgba(27,35,80,.08)}
+.tile.neg .ti{color:var(--bad)}
+.tile b{display:block;line-height:1.3}
+.tile span{color:var(--soft);font-size:16px;line-height:1.4}
+.note{display:flex;gap:12px;align-items:flex-start;border-radius:16px;padding:14px 16px}
+.note .ni{font-size:24px;line-height:1;margin-top:2px}
+.note.warn{background:var(--goldl);color:#5A4203}
+.note.warn .ni{color:#C88A06}
+.note.info{background:#E5F6F5;color:#0B4F4C}
+.note.info .ni{color:var(--teal)}
+ol.steps{padding:0;list-style:none;counter-reset:s;margin:0}
+ol.steps li{counter-increment:s;position:relative;padding:9px 0 9px 54px;min-height:46px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:38px;height:38px;border-radius:12px;background:var(--ink);color:#fff;font-weight:800;display:grid;place-items:center}
+.phone{position:relative;margin:0 auto;padding:10px;border-radius:38px;background:#111521;box-shadow:0 18px 40px rgba(27,35,80,.25),inset 0 0 0 2px #2A3045}
+.phone .scr{position:relative;border-radius:28px;overflow:hidden;background:#000}
+.phone img{display:block;width:100%;height:auto}
+.spot{position:absolute;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:var(--gold);color:#1B2350;font-weight:800;border:3px solid #fff;display:grid;place-items:center;font-size:17px;padding:0;box-shadow:0 4px 10px rgba(0,0,0,.35);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,-50%) scale(1.1)}}
+.spot.on{background:var(--violet);color:#fff;animation:none;transform:translate(-50%,-50%) scale(1.15)}
+.refimg{text-align:center}.refimg img{display:block;max-width:min(340px,100%);margin:0 auto;border-radius:16px;box-shadow:0 12px 30px rgba(27,35,80,.18)}.refimg .dl{margin-top:12px}
+.cap{color:var(--soft);font-size:15px;text-align:center;margin-top:10px}
+.legend{display:grid;gap:8px;margin-top:12px}
+.legend button{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--bg);border:2px solid transparent;border-radius:14px;padding:10px 12px}
+.legend button.on{border-color:var(--violet);background:#F1EEFF}
+.legend i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--gold);font-weight:800;display:grid;place-items:center;flex-shrink:0}
+.legend button.on i{background:var(--violet);color:#fff}
+.prompt{position:relative;background:#F5F7FF;border:1.5px solid #D5DDF8;border-radius:18px;padding:16px 16px 14px 20px;white-space:pre-wrap}
+.prompt::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--blue)}
+.act{display:inline-flex;align-items:center;gap:8px;margin-top:10px;border:0;border-radius:14px;padding:11px 18px;font-weight:800;background:var(--blue);color:#fff;font-size:17px;box-shadow:0 4px 12px rgba(54,87,232,.28)}
+.act.ok{background:var(--ok);box-shadow:none}
+.dl{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;text-decoration:none;border-radius:16px;padding:13px 20px;font-weight:800;box-shadow:0 4px 12px rgba(14,165,160,.28)}
+.task{display:flex;gap:14px;align-items:center;background:#fff;border:2px dashed #C9D1E3;border-radius:16px;padding:12px 14px;width:100%;text-align:left;font-weight:700;transition:all .2s}
+.task .bx{width:34px;height:34px;border-radius:11px;border:2.5px solid #AEB7CC;flex-shrink:0;display:grid;place-items:center;color:#fff;font-size:20px;transition:all .2s}
+.task.on{border-style:solid;border-color:var(--ok);background:#EAF8F1}
+.task.on .bx{background:var(--ok);border-color:var(--ok)}
+.flips{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.flips.c2{grid-template-columns:repeat(2,1fr)}@media (max-width:820px){.flips{grid-template-columns:repeat(2,1fr)}}@media (max-width:520px){.flips,.flips.c2{grid-template-columns:1fr}}
+.flip{display:flex;flex-direction:column;gap:6px;background:var(--bg);border:2px solid transparent;border-radius:18px;padding:14px;text-align:left;min-height:118px;transition:all .25s}
+.flip .fi{width:40px;height:40px;border-radius:12px;background:#fff;color:var(--violet);display:grid;place-items:center;font-size:21px}
+.flip b{line-height:1.3}
+.flip .back{display:none;color:var(--soft);font-size:16px;line-height:1.45}
+.flip .hint{font-size:14px;color:var(--violet);font-weight:800;margin-top:auto}
+.flip.on{background:#F1EEFF;border-color:var(--violet)}
+.flip.on .back{display:block}.flip.on .hint{display:none}
+h3.sub{font-family:var(--disp);font-weight:800;font-size:18px;margin:24px 0 8px}
+.quiz{margin-top:24px;border-radius:22px;padding:18px;background:linear-gradient(180deg,#F1EEFF,#F5F7FF)}
+.quiz .qh{display:flex;gap:10px;align-items:flex-start;font-weight:800;font-size:19px;margin-bottom:6px}
+.quiz .qh .q{color:var(--violet);font-size:24px;line-height:1;margin-top:2px}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin:9px 0;transition:all .2s}
+.opt .k{width:32px;height:32px;border-radius:10px;background:var(--bg);font-weight:800;display:grid;place-items:center;flex-shrink:0}
+.opt:hover{border-color:#B9C3DB}
+.opt.ok{border-color:var(--ok);background:#EAF8F1}.opt.ok .k{background:var(--ok);color:#fff}
+.opt.bad{border-color:var(--bad);background:#FDEDEB;animation:shake .4s}.opt.bad .k{background:var(--bad);color:#fff}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.why{font-weight:700;margin-top:6px}
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:16px;padding:15px 22px;font-weight:800;font-size:18px}
+.btn.main{flex:1;background:var(--ink);color:#fff;box-shadow:0 6px 16px rgba(27,35,80,.25)}
+.btn.main:disabled{background:#CBD2E0;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:#fff;border:2px solid var(--line)}
+.dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px}.dots i{width:10px;height:10px;border-radius:99px;background:#D3D9E6;transition:all .3s}.dots i.on{width:28px;background:var(--violet)}.dots i.ok{background:var(--teal)}
+.stepn{font-weight:800;color:var(--soft);font-size:14px;letter-spacing:.06em;text-transform:uppercase;text-align:center;margin-top:16px}
+.need{color:var(--soft);font-size:15px;margin-top:8px;text-align:center}
+.final{text-align:center;padding:26px 20px}
+.cup{width:150px;height:150px;margin:6px auto 10px;border-radius:50%;display:grid;place-items:center;font-size:72px;color:#fff;background:radial-gradient(circle at 35% 30%,#FFE08A,#E9A824 55%,#B97300);box-shadow:0 14px 34px rgba(233,168,36,.45),inset 0 0 0 8px rgba(255,255,255,.35);animation:pop .9s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(.2) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}
+.final h2{font-family:var(--disp);font-weight:900;font-size:24px;line-height:1.25;margin:8px 0}
+canvas#cf{position:absolute;left:0;top:0;width:100%;pointer-events:none}
+.toast{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;font-weight:800;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;white-space:nowrap}
+.toast.on{opacity:1}
+@media (max-width:520px){html,body{font-size:18px}.hero h1{font-size:21px}.lvtop h2{font-size:20px}.lvtop .big{width:62px;height:62px;font-size:30px}.body{padding:4px 14px 16px}.med{width:62px;height:62px;font-size:26px}.route::before{left:38px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.refimg img[src*="/lessons/claude/"]{max-width:100%}.refimg img[src*="/brand/"]{max-width:200px;box-shadow:none;border-radius:0}</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+<script id="data" type="application/json">{"lang": "ru", "key": "press-claude-game", "ui": {"finish": "Финиш", "done": "Пройдено", "start": "Начать", "locked": "Сначала пройдите предыдущий уровень", "level": "Уровень", "map": "Карта", "next": "Следующий уровень", "toFinal": "К финишу", "copy": "Копировать", "copied": "Скопировано", "flip": "Нажмите — что внутри?", "great": "Отлично!", "tryAgain": "Попробуйте ещё раз!", "needQuiz": "", "needTasks": "Чтобы перейти дальше, отметьте задание.", "finalLocked": "Откроется после всех уровней", "reset": "Начать заново", "resetQ": "Все звёзды сбросятся. Начать заново?", "step": "Шаг", "further": "Далее", "back": "Назад", "title": "Занятие 2. Claude от А до Я", "hero": "Пройдите 13 уровней и соберите все звёзды", "eyebrow": "Ваш путь · занятие 2", "finalTitle": "Поздравляем! Claude настроен под пресс-службу", "finalText": "Вы собрали {s} / {m} звёзд. У вас есть аккаунт, приложение, проект «Пресс-служба», скиллы и коннекторы.", "homework": "<b>Дальше:<\/b> занятие 3 — связка ChatGPT + Claude, лайфхаки и практика с готовыми промтами."}, "levels": [{"id": "what", "part": "Установка и вход", "icon": "sparkle", "title": "Что такое Claude", "blocks": [{"t": "h", "h": "Знакомьтесь: Claude"}, {"t": "p", "h": "Claude — ИИ-помощник от компании Anthropic. Он пишет и редактирует тексты, читает документы и фото, делает файлы Word и PowerPoint, помогает с видео и картинками."}, {"t": "h", "h": "Где работает Claude"}, {"t": "tiles", "items": [["globe", "Браузер", "Сайт claude.ai — ничего не нужно устанавливать"], ["laptop", "Компьютер", "Приложение для Windows и macOS"], ["phone", "Телефон", "Приложение для iPhone и Android"]]}, {"t": "info", "h": "Аккаунт один: чаты и проекты видны везде — начали на компьютере, продолжили в телефоне.", "i": "bulb"}, {"t": "h", "h": "Бесплатно или платно"}, {"t": "p", "h": "Для старта хватит бесплатного тарифа <b>Free<\/b>: чат, файлы, проекты и скиллы. Платный <b>Pro<\/b> даёт больше сообщений в день и дополнительные возможности в приложении для компьютера."}, {"t": "warn", "h": "На бесплатном тарифе есть лимит сообщений. Закончился — Claude подскажет, когда можно продолжить."}]}, {"id": "signup", "part": "Установка и вход", "icon": "key", "title": "Регистрация и вход", "blocks": [{"t": "h", "h": "Регистрация: 3 шага"}, {"t": "p", "h": "Откройте <a href=\"https://claude.ai\" target=\"_blank\" rel=\"noopener\"><b>claude.ai<\/b><\/a> и нажмите «Sign up» или «Try Claude»."}, {"t": "steps", "items": ["Нажмите <b>«Continue with Google»<\/b> и выберите свой Google-аккаунт — так быстрее всего.", "Или введите email → на почту придёт <b>ссылка для входа<\/b>. Пароль не нужен.", "Подтвердите <b>номер телефона<\/b>: придёт SMS с 6-значным кодом."]}, {"t": "h", "h": "Про номер телефона"}, {"t": "p", "h": "Номер нужен один раз — для защиты от спама. Подойдёт обычный мобильный номер."}, {"t": "warn", "h": "Один номер — один аккаунт. Виртуальные номера и номера из приложений не принимаются."}, {"t": "h", "h": "Не пришло письмо для входа?"}, {"t": "p", "h": "Проверьте папки «Спам» и «Промоакции»: письмо приходит с адреса <b>@mail.anthropic.com<\/b>."}, {"t": "info", "h": "Проще всего входить через Google — тогда письма не нужны.", "i": "bulb"}, {"t": "task", "id": "acc", "label": "У меня есть аккаунт Claude, я вошёл(ла)"}]}, {"id": "desktop", "part": "Установка и вход", "icon": "laptop", "title": "Приложение на компьютер", "blocks": [{"t": "h", "h": "Зачем приложение"}, {"t": "p", "h": "В браузере Claude работает полностью. Приложение удобнее: открывается одной кнопкой, работает с файлами на компьютере и даёт дополнительные возможности."}, {"t": "h", "h": "Скачиваем"}, {"t": "p", "h": "Откройте <a href=\"https://claude.ai/download\" target=\"_blank\" rel=\"noopener\"><b>claude.ai/download<\/b><\/a>:"}, {"t": "img", "src": "/lessons/claude/claude-download.jpg", "cap": "Страница скачивания Claude"}, {"t": "steps", "items": ["Нажмите <b>«Download for Windows»<\/b> (на Mac — «Download» напротив macOS).", "<b>«Try Claude»<\/b> — если хотите работать в браузере без установки."]}, {"t": "h", "h": "Устанавливаем"}, {"t": "p", "h": "Откройте скачанный файл — установка пройдёт сама."}, {"t": "steps", "items": ["Откройте скачанный файл.", "Запустите Claude из меню «Пуск» (на Mac — из папки «Программы»).", "Войдите тем же аккаунтом, что и на сайте."]}, {"t": "info", "h": "Нужен Windows 10 или новее.", "i": "info"}, {"t": "task", "id": "app", "label": "Приложение установлено (или работаю в браузере)"}]}, {"id": "mobile", "part": "Установка и вход", "icon": "phone", "title": "Claude в телефоне", "blocks": [{"t": "h", "h": "Ставим на телефон"}, {"t": "p", "h": "В App Store или Google Play найдите <b>Claude by Anthropic<\/b> и войдите тем же аккаунтом."}, {"t": "h", "h": "Чем удобен телефон"}, {"t": "tiles", "items": [["mic", "Голос", "Надиктовали впечатления после мероприятия — получили текст"], ["image", "Фото", "Сфотографировали афишу или документ — Claude прочитал"], ["chat", "Те же чаты", "Всё, что начали на компьютере, — под рукой"]]}]}, {"id": "claude", "part": "Работа в Claude", "icon": "chat", "title": "Главный экран и первый промт", "blocks": [{"t": "h", "h": "Главный экран"}, {"t": "p", "h": "Так выглядит Claude после входа. Цифрами отмечено главное:"}, {"t": "img", "src": "/lessons/claude/claude-chat.jpg", "cap": "Главный экран Claude"}, {"t": "steps", "items": ["<b>Поле<\/b> — сюда пишем промт.", "<b>«+»<\/b> — прикрепить файл или фото.", "<b>Стрелка<\/b> — отправить.", "<b>Модель<\/b> — какой «мозг» отвечает. Оставляйте как есть."]}, {"t": "h", "h": "Отправляем промт"}, {"t": "p", "h": "Вставьте промт по формуле и нажмите стрелку или <b>Enter<\/b>."}, {"t": "info", "h": "Новая строка без отправки — <b>Shift + Enter<\/b>.", "i": "bulb"}, {"t": "h", "h": "Если ответ не нравится"}, {"t": "p", "h": "Не начинайте заново. Напишите в том же чате, что поправить — Claude помнит всё, что было выше."}, {"t": "prompt", "text": "Второй абзац короче, остальное не трогай."}]}, {"id": "files", "part": "Работа в Claude", "icon": "file", "title": "Файлы и скриншоты", "blocks": [{"t": "h", "h": "Прикрепляем файл"}, {"t": "p", "h": "Claude читает фото, скриншоты, PDF, Word, таблицы."}, {"t": "img", "src": "/lessons/claude/claude-plus-menu.jpg", "cap": "Меню «+»"}, {"t": "steps", "items": ["Нажмите <b>«+»<\/b> слева внизу в поле.", "Выберите <b>«Загрузить или добавить файл»<\/b>.", "Найдите файл на компьютере или телефоне."]}, {"t": "info", "h": "Можно просто <b>перетащить файл мышкой<\/b> в окно чата.", "i": "bulb"}, {"t": "h", "h": "Скриншот вместо объяснений"}, {"t": "p", "h": "Прикрепите скриншот удачного поста и напишите задачу:"}, {"t": "prompt", "text": "Сделай пост по той же схеме про наше событие: [событие, дата, место]."}, {"t": "h", "h": "Важно"}, {"t": "p", "h": "Работайте только с открытыми материалами."}, {"t": "warn", "h": "Не загружайте в личные аккаунты <b>персональные данные<\/b> студентов и сотрудников."}]}, {"id": "project", "part": "Работа в Claude", "icon": "list", "title": "Проект «Пресс-служба»", "blocks": [{"t": "h", "h": "Проект — папка под одну тему"}, {"t": "p", "h": "Проект хранит ваши файлы и правила. Каждый новый чат внутри проекта уже их знает — не нужно объяснять всё заново."}, {"t": "h", "h": "Создаём новый проект"}, {"t": "p", "h": "Слева в меню нажмите <b>«Проекты»<\/b>, затем справа вверху — <b>«Новый проект»<\/b>."}, {"t": "img", "src": "/lessons/claude/claude-projects-new.jpg", "cap": "Кнопка «Новый проект»"}, {"t": "h", "h": "Заполняем проект"}, {"t": "p", "h": "Заполните форму и создайте проект:"}, {"t": "img", "src": "/lessons/claude/claude-project-form.jpg", "cap": "Создание проекта"}, {"t": "steps", "items": ["Название: <b>Пресс-служба ВКУ<\/b>.", "Цель: посты, новости и Reels на RU и KZ.", "<b>«Добавить контекст»<\/b> — логотип, брендбук, 5 лучших постов.", "<b>«Создать проект»<\/b>."]}, {"t": "h", "h": "Работаем внутри проекта"}, {"t": "p", "h": "Открывайте проект и начинайте новый чат <b>там<\/b>. Claude уже знает ваш стиль, логотип и правила."}, {"t": "task", "id": "proj", "label": "Я создал(а) проект «Пресс-служба»"}]}, {"id": "settings", "part": "Работа в Claude", "icon": "key", "title": "Включаем создание файлов", "blocks": [{"t": "h", "h": "Зачем это нужно"}, {"t": "p", "h": "Чтобы Claude делал <b>готовые файлы<\/b> (Word, PowerPoint, картинки) и работали <b>скиллы<\/b>."}, {"t": "h", "h": "Где включить"}, {"t": "p", "h": "Слева внизу нажмите на своё имя — откроется меню."}, {"t": "img", "src": "/lessons/claude/claude-account-menu.jpg", "cap": "Меню аккаунта"}, {"t": "steps", "items": ["Нажмите на своё имя слева внизу.", "Выберите <b>«Настройки»<\/b>.", "Откройте раздел <b>«Возможности»<\/b>.", "Включите <b>«Создание и редактирование файлов»<\/b>."]}, {"t": "info", "h": "Названия меню иногда меняются. Не нашли — спросите ИИ-помощника на этой странице.", "i": "help"}, {"t": "task", "id": "files", "label": "Создание файлов включено"}]}, {"id": "skillsrc", "part": "Скиллы и коннекторы", "icon": "sparkle", "title": "Где брать хорошие скиллы", "blocks": [{"t": "h", "h": "Скилл — инструкция для Claude"}, {"t": "p", "h": "Скилл учит Claude делать определённую работу по вашим правилам: пресс-релиз, дизайн, перевод. Загрузили один раз — работает во всех чатах."}, {"t": "h", "h": "Источник 1: встроенные"}, {"t": "p", "h": "Word, PowerPoint, Excel и PDF Claude уже умеет делать сам — достаточно включить «Создание и редактирование файлов» (прошлый уровень)."}, {"t": "h", "h": "Источник 2: официальные скиллы Anthropic"}, {"t": "p", "h": "Anthropic выкладывает бесплатные скиллы на GitHub. Я выбрала полезные для пресс-службы и сложила в ZIP — скачивайте:"}, {"t": "dl", "href": "/skills/anthropic-canvas-design.zip", "label": "Canvas Design — постеры и визуалы в PNG/PDF", "dl": true}, {"t": "dl", "href": "/skills/anthropic-theme-factory.zip", "label": "Theme Factory — 10 готовых стилей для слайдов и документов", "dl": true}, {"t": "dl", "href": "/skills/anthropic-internal-comms.zip", "label": "Internal Comms — новости, рассылки, отчёты", "dl": true}, {"t": "dl", "href": "/skills/anthropic-doc-coauthoring.zip", "label": "Doc Co-authoring — пишем большой документ вместе с Claude", "dl": true}, {"t": "dl", "href": "/skills/anthropic-slack-gif-creator.zip", "label": "GIF Creator — анимированные GIF", "dl": true}, {"t": "dl", "href": "/skills/anthropic-skill-creator.zip", "label": "Skill Creator — помогает собрать свой скилл", "dl": true}, {"t": "h", "h": "Источник 3: скиллы нашего курса"}, {"t": "p", "h": "Скиллы под задачи пресс-службы, с нашим логотипом внутри:"}, {"t": "dl", "href": "/skills/post-4-socials.zip", "label": "Пост в 4 соцсети (RU + KZ)", "dl": true}, {"t": "dl", "href": "/skills/press-release-vku.zip", "label": "Пресс-релиз и новость на сайт", "dl": true}, {"t": "dl", "href": "/skills/reels-script.zip", "label": "Сценарий Reels", "dl": true}, {"t": "dl", "href": "/skills/press-video-ffmpeg.zip", "label": "Монтаж видео с логотипом", "dl": true}, {"t": "h", "h": "Осторожно с чужими скиллами"}, {"t": "p", "h": "Скилл может содержать команды для Claude. Берите скиллы только из проверенных мест: официальный GitHub Anthropic и наш курс."}, {"t": "warn", "h": "Не загружайте скиллы из случайных Telegram-каналов и сайтов."}]}, {"id": "skillup", "part": "Скиллы и коннекторы", "icon": "list", "title": "Загружаем скилл", "blocks": [{"t": "h", "h": "Перед началом"}, {"t": "p", "h": "Проверьте, что включено «Создание и редактирование файлов» — без этого скиллы не работают."}, {"t": "h", "h": "Загружаем ZIP"}, {"t": "p", "h": "Распаковывать архив не нужно."}, {"t": "steps", "items": ["Откройте раздел <b>Customize → Skills<\/b> (по-русски может называться «Настроить → Навыки»).", "Нажмите <b>«+»<\/b> → <b>«Create skill»<\/b> → <b>«Upload a skill»<\/b>.", "Выберите скачанный ZIP-файл.", "Проверьте, что переключатель скилла <b>включён<\/b>."]}, {"t": "info", "h": "В том же разделе можно просто включить готовые примеры скиллов от Anthropic — переключателем, без скачивания.", "i": "bulb"}, {"t": "h", "h": "Как пользоваться скиллом"}, {"t": "p", "h": "Ничего нажимать не нужно. Просто опишите задачу — Claude сам поймёт, что пора использовать скилл."}, {"t": "prompt", "text": "Сделай постер к Дню открытых дверей в синем цвете #004AAD, формат 4:5."}, {"t": "task", "id": "sk", "label": "Я загрузил(а) хотя бы один скилл"}]}, {"id": "conn", "part": "Скиллы и коннекторы", "icon": "globe", "title": "Коннекторы: подключаем сервисы", "blocks": [{"t": "h", "h": "Что такое коннектор"}, {"t": "p", "h": "Коннектор связывает Claude с вашими сервисами: Google Диском, почтой, календарём, Canva. Claude сам найдёт нужный файл или сделает дизайн — без копирования туда-сюда."}, {"t": "h", "h": "Где включить"}, {"t": "p", "h": "В новом интерфейсе коннекторы называются <b>«Плагины»<\/b>."}, {"t": "img", "src": "/lessons/claude/claude-plugins-menu.jpg", "cap": "Меню «+» → «Плагины»"}, {"t": "steps", "items": ["В поле сообщения нажмите <b>«+»<\/b> → наведите на <b>«Плагины»<\/b>.", "Переключателями включите нужные сервисы.", "<b>«Управление плагинами»<\/b> — добавить новый сервис."]}, {"t": "h", "h": "Каталог коннекторов"}, {"t": "p", "h": "Все коннекторы собраны в каталоге — их больше тысячи:"}, {"t": "img", "src": "/lessons/claude/claude-connectors-dir.jpg", "cap": "Каталог коннекторов Claude"}, {"t": "steps", "items": ["Найдите сервис через поиск.", "Нажмите «+» рядом с ним.", "Войдите в сервис и разрешите доступ."]}, {"t": "dl", "href": "https://claude.com/marketplace/connectors-plugins", "label": "Открыть каталог коннекторов", "dl": false}, {"t": "h", "h": "Безопасность"}, {"t": "p", "h": "Claude видит только то, к чему вы дали доступ, и спрашивает разрешения перед важными действиями."}, {"t": "info", "h": "По данным Anthropic, данные из Gmail, Google Диска и Календаря не используются для обучения моделей.", "i": "info"}]}, {"id": "connlist", "part": "Скиллы и коннекторы", "icon": "trophy", "title": "Какие коннекторы включить", "blocks": [{"t": "h", "h": "Набор пресс-службы"}, {"t": "tiles", "items": [["file", "Google Drive", "Находит документы и сохраняет готовые файлы на Диск"], ["mail", "Gmail", "Ищет письма и готовит черновики ответов"], ["cal", "Google Calendar", "Видит график мероприятий, помогает с анонсами"], ["image", "Canva", "Делает дизайн и шаблоны прямо из чата"], ["pen", "Adobe", "Обработка фото и визуалов"], ["users", "Microsoft 365", "Если вуз работает в Outlook и OneDrive"]]}, {"t": "h", "h": "Попробуем Google Диск"}, {"t": "p", "h": "Включите Google Drive и напишите:"}, {"t": "prompt", "text": "Найди на моём Google Диске пресс-релиз о [событие] и сделай из него пост для Instagram на русском и казахском."}, {"t": "h", "h": "Попробуем Canva"}, {"t": "p", "h": "Включите Canva и попросите дизайн — потом добавьте наш логотип:"}, {"t": "prompt", "text": "Сделай в Canva обложку поста о [событие] в синем цвете #004AAD, формат 4:5, место под логотип в правом верхнем углу."}, {"t": "task", "id": "cn", "label": "Я подключил(а) хотя бы один коннектор"}]}, {"id": "done", "part": "Практика", "icon": "trophy", "title": "Проверим себя на деле", "blocks": [{"t": "h", "h": "Первый промт в проекте"}, {"t": "p", "h": "Откройте проект «Пресс-служба», начните новый чат и отправьте:"}, {"t": "prompt", "text": "Ты — SMM-редактор университета. Напиши анонс [событие] для Instagram. Аудитория — [кто]. Дата, время, место: [...]. До 80 слов, 3 варианта, на русском и казахском. Перед тем как начать, задай мне 3 уточняющих вопроса."}, {"t": "task", "id": "first", "label": "Claude задал вопросы, я ответил(а) и получил(а) 3 варианта"}, {"t": "h", "h": "Поправим ответ"}, {"t": "p", "h": "Выберите лучший вариант и попросите точечную правку:"}, {"t": "prompt", "text": "Возьми вариант 2. Сделай первую строку интригующей, остальное не трогай."}, {"t": "task", "id": "fix", "label": "Пост готов"}]}]}</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent), T=D.ui, L=D.levels;
+const IC={
+mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4M8 22h8"/>',
+table:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16M15 4v16"/>',
+play:'<rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/>',
+cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M14 14h2M8 17h2"/>',
+bot:'<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 4h6M2 13v3M22 13v3"/><circle cx="9" cy="14" r="1.2"/><circle cx="15" cy="14" r="1.2"/>',
+phone:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v6m-3-3 3 3 3-3M10.5 18h3"/>',
+key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9m-4 4 3 3m-6-1 2 2"/>',
+compass:'<circle cx="12" cy="12" r="10"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5z"/>',
+chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5.1A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>',
+sparkle:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15v4M17 17h4M5 3v3M3.5 4.5h3"/>',
+shield:'<path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/>',
+image:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8c-1.5-3.5-5-4-5-1.5S10 8 12 8zm0 0c1.5-3.5 5-4 5-1.5S14 8 12 8z"/>',
+file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+trophy:'<path d="M8 21h8M12 16v5M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+lock:'<rect x="4.5" y="11" width="15" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/>',
+copy:'<rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>',
+check:'<path d="M20 6 9 17l-5-5"/>',down:'<path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/>',open:'<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+map:'<path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3z"/><path d="M9 3v15M15 6v15"/>',arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',left:'<path d="M19 12H5m6-6-6 6 6 6"/>',redo:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/>',help:'<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+heart:'<path d="M20.8 8.6a5 5 0 0 0-8.8-3.2 5 5 0 0 0-8.8 3.2c0 5.4 8.8 11.4 8.8 11.4s8.8-6 8.8-11.4z"/>',
+mail:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3 7 9 6 9-6"/>',food:'<path d="M7 2v20M4 2v6a3 3 0 0 0 6 0V2M17 2c-2 2-3 5-3 8h4v12"/>',
+globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>',bulb:'<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/>',
+idcard:'<rect x="2" y="5" width="20" height="14" rx="2.5"/><circle cx="8" cy="12" r="2"/><path d="M14 10h5M14 14h4"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20M6 15h4"/>',
+users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-5-6.7"/>',
+pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+ruler:'<path d="M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4z"/><path d="m7.5 10.5 2 2M10.5 7.5l2 2M13.5 4.5l2 2M4.5 13.5l2 2"/>',
+quote:'<path d="M3 21c3 0 7-1 7-8V5H3v7h4c0 4-2 6-4 6zM14 21c3 0 7-1 7-8V5h-7v7h4c0 4-2 6-4 6z"/>',ban:'<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+one:'<path d="M10 7l3-2v14M10 19h6"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+mask:'<path d="M2 10s3-3 10-3 10 3 10 3v2a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8z"/><path d="M8 13h.01M16 13h.01"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',pin:'<path d="M12 17v5M5 17h14l-2-4V4H7v9z"/>',laptop:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/>',
+thinking:'<circle cx="12" cy="12" r="10"/><path d="M8 15h8M9 9h.01M15 9h.01"/>'};
+const ic=(n,c='i')=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||IC.info}</svg>`;
+const STAR='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z" stroke-width="1.6"/></svg>';
+const ORN='<svg class="orn" viewBox="0 0 220 200" fill="none" aria-hidden="true"><g stroke="#fff" stroke-width="2" opacity=".9"><path d="M40 60 L95 35 L150 70 L195 40 M95 35 L110 105 L150 70 M40 60 L60 130 L110 105 L170 140 L150 70 M60 130 L120 175 L170 140 M110 105 L120 175 M195 40 L205 110 L170 140"/></g><g fill="#fff"><circle cx="40" cy="60" r="6"/><circle cx="95" cy="35" r="8"/><circle cx="150" cy="70" r="7"/><circle cx="195" cy="40" r="5"/><circle cx="110" cy="105" r="10"/><circle cx="60" cy="130" r="6"/><circle cx="170" cy="140" r="8"/><circle cx="120" cy="175" r="6"/><circle cx="205" cy="110" r="5"/></g><g fill="#fff"><path d="M30 165l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/><path d="M200 175l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M70 15l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g></svg>';
+const KEY=(D.key||'ai-m2-game')+'-'+D.lang;
+let S={stars:{},tasks:{},cur:null};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s), app=$('#app');
+const total=()=>L.reduce((a,l)=>a+(S.stars[l.id]||0),0), max=L.length*3;
+const done=i=>S.stars[L[i].id]!=null, open=i=>i===0||done(i-1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let ready=false;const up=()=>{if(!ready)return;try{parent.postMessage({aiGameTop:1},'*')}catch(e){}};
+const sendH=()=>{try{parent.postMessage({aiGameHeight:document.body.scrollHeight},'*')}catch(e){}};
+new ResizeObserver(sendH).observe(document.body);addEventListener('load',()=>{sendH();setTimeout(sendH,600);setTimeout(sendH,1600)});
+const stars3=n=>`<span class="stars3">${[0,1,2].map(k=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join('')}</span>`;
+function toast(n,el){const t=$('#toast');t.innerHTML=`${stars3(n)} ${esc(T.great)}`;const r=(el||document.body).getBoundingClientRect();t.style.top=(r.top+scrollY-54)+'px';t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1900)}
+function hero(){const p=Math.round(total()/max*100);return `<div class="hero">${ORN}<div class="eyebrow">${esc(T.eyebrow)}</div><h1>${esc(T.hero)}</h1><div class="hrow"><span class="pill"><span class="st">${STAR}</span> <span id="sc">${total()} / ${max}</span></span><div class="prog" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div></div></div>`}
+function map(){document.getElementById('toast').classList.remove('on');S.cur=null;save();let h=hero(),part='',first=L.findIndex((_,i)=>open(i)&&!done(i));
+ L.forEach((l,i)=>{if(l.part!==part){if(part)h+='</div>';part=l.part;h+=`<div class="sect">${esc(part)}</div><div class="route">`}
+  const d=done(i),o=open(i),cls=(l.part===L[0].part?'th':'pr')+(d?' done':'')+(o?'':' lock')+(i===first?' now':'');
+  h+=`<button class="node ${cls}" ${o?'':'disabled'} onclick="go(${i})"><span class="med">${ic(o?(d?'check':l.icon):'lock')}</span><span class="lab"><b>${i+1}. ${esc(l.title)}</b><small>${d?stars3(S.stars[l.id]):o?esc(T.start)+' '+ic('arrow'):esc(T.locked)}</small></span></button>`});
+ h+='</div>';const fin=L.every((_,i)=>done(i));
+ h+=`<div class="sect">${esc(T.finish)}</div><div class="route"><button class="node fin ${fin?'done now':'lock'}" ${fin?'':'disabled'} onclick="final()"><span class="med">${ic(fin?'trophy':'lock')}</span><span class="lab"><b>${esc(T.finalTitle)}</b><small>${esc(fin?T.start:T.finalLocked)}</small></span></button></div>`;
+ app.innerHTML=h;scrollTo(0,0);up();sendH()}
+function blk(b,li){switch(b.t){
+ case 'p':return `<div class="blk"><p>${b.h}</p></div>`;
+ case 'warn':return `<div class="blk note warn"><span class="ni">${ic(b.i||'alert')}</span><div>${b.h}</div></div>`;
+ case 'info':return `<div class="blk note info"><span class="ni">${ic(b.i||'info')}</span><div>${b.h}</div></div>`;
+ case 'tiles':return `<div class="blk tiles ${b.items.length%3&&b.items.length%2===0?'c2':''}">${b.items.map(x=>`<div class="tile ${b.neg?'neg':''}"><span class="ti">${ic(x[0])}</span><div><b>${x[1]}</b><span>${x[2]}</span></div></div>`).join('')}</div>`;
+ case 'steps':return `<div class="blk"><ol class="steps">${b.items.map(x=>`<li>${x}</li>`).join('')}</ol></div>`;
+ case 'shot':{const id='s'+Math.random().toString(36).slice(2,7);
+  return `<div class="blk"><div class="phone" style="max-width:${b.max||330}px"><div class="scr" id="${id}"><img src="${b.src}" alt="${esc(b.cap||'')}">${b.spots.map((s,k)=>`<button class="spot" style="left:${s[0]}%;top:${s[1]}%" onclick="spot('${id}',${k})" aria-label="${k+1}">${k+1}</button>`).join('')}</div></div><div class="cap">${esc(b.cap||'')}</div><div class="legend" id="${id}L">${b.spots.map((s,k)=>`<button onclick="spot('${id}',${k})"><i>${k+1}</i><span>${s[2]}</span></button>`).join('')}</div></div>`}
+ case 'prompt':return `<div class="blk"><div class="prompt">${esc(b.text)}</div><button class="act" onclick="cp(this)" data-t="${esc(b.text)}">${ic('copy')} ${esc(T.copy)}</button></div>`;
+ case 'dl':return `<div class="blk"><a class="dl" href="${b.href}" ${b.dl?'download':''} target="_blank" rel="noopener">${ic(b.dl?'down':'open')} ${esc(b.label)}</a>${b.note?`<div class="need" style="text-align:left">${esc(b.note)}</div>`:''}</div>`;
+ case 'task':{const on=S.tasks[b.id];return `<div class="blk"><button class="task ${on?'on':''}" aria-pressed="${!!on}" onclick="tk(this,'${b.id}',${li})"><span class="bx">${on?ic('check'):''}</span><span>${b.label}</span></button></div>`}
+ case 'flips':return `<div class="blk flips ${b.items.length%3&&b.items.length%2===0?'c2':''}">${b.items.map(x=>`<button class="flip" onclick="this.classList.toggle('on');sendH()"><span class="fi">${ic(x[2]||'bulb')}</span><b>${x[0]}</b><span class="hint">${esc(T.flip)}</span><span class="back">${x[1]}</span></button>`).join('')}</div>`;
+ case 'h':return `<h3 class="sub">${b.h}</h3>`;
+ case 'img':return `<div class="blk refimg"><img src="${b.src}" alt="${esc(b.cap||'')}"><div class="cap">${esc(b.cap||'')}</div>${b.dl?`<a class="dl" href="${b.src}" download target="_blank" rel="noopener">${ic('down')} ${esc(b.dl)}</a>`:''}</div>`;
+ }return ''}
+function screens(l){const out=[];let cur=null;l.blocks.forEach(b=>{if(!cur||b.t==='h'){cur=[b];out.push(cur)}else cur.push(b)});if(l.quiz)out.push('quiz');return out}
+let STEP=0;
+function go(i,st){if(!open(i))return;document.getElementById('toast').classList.remove('on');S.cur=i;save();const l=L[i],cls=l.part===L[0].part?'th':'pr',SC=screens(l);STEP=st==null?0:Math.max(0,Math.min(st,SC.length-1));const sc=SC[STEP],last=STEP===SC.length-1;S.step=STEP;save();
+ let h=`<div class="lvtop ${cls}">${ORN}<span class="big">${ic(l.icon)}</span><div><div class="eyebrow">${esc(T.level)} ${i+1} / ${L.length} · ${esc(l.part)}</div><h2>${esc(l.title)}</h2></div></div><div class="body">`;
+ h+=`<div class="stepn">${esc(T.step)} ${STEP+1} / ${SC.length}</div><div class="dots">${SC.map((_,k)=>`<i class="${k===STEP?'on':k<STEP?'ok':''}"></i>`).join('')}</div>`;
+ if(sc==='quiz')h+=`<div class="quiz"><div class="qh"><span class="q">${ic('help')}</span><span>${esc(l.quiz.q)}</span></div>${l.quiz.opts.map((o,k)=>`<button class="opt" onclick="ans(this,${i},${k})"><span class="k">${'ABC'[k]}</span><span>${esc(o)}</span></button>`).join('')}<div class="why" id="why" aria-live="polite"></div></div>`;
+ else h+=sc.map(b=>blk(b,i)).join('');
+ const tids=sc==='quiz'?[]:sc.filter(b=>b.t==='task').map(b=>b.id),need=tids.some(x=>!S.tasks[x]);
+ const canNext=sc==='quiz'?done(i):!need;
+ const nextLbl=last?(i===L.length-1?T.toFinal:T.next):T.further;
+ h+=`<div class="nav"><button class="btn ghost" onclick="${STEP>0?`go(${i},${STEP-1})`:'map()'}">${STEP>0?ic('left')+' '+esc(T.back):ic('map')+' '+esc(T.map)}</button><button class="btn main" id="nx" onclick="adv(${i})" ${canNext?'':'disabled'}>${esc(nextLbl)} ${ic('arrow')}</button></div><div class="need" id="need">${canNext?'':esc(sc==='quiz'?T.needQuiz:T.needTasks)}</div></div>`;
+ app.innerHTML=hero()+'<div style="height:14px"></div>'+h;window.tries=0;scrollTo(0,0);up();sendH()}
+function adv(i){const l=L[i],SC=screens(l);if(STEP<SC.length-1)return go(i,STEP+1);
+ if(!l.quiz&&S.stars[l.id]==null){S.stars[l.id]=3;save()}
+ if(!l.quiz)toast(3,$('#nx'));setTimeout(()=>next(i),l.quiz?0:700)}
+function spot(id,k){document.querySelectorAll('#'+id+' .spot').forEach((s,j)=>s.classList.toggle('on',j===k));document.querySelectorAll('#'+id+'L button').forEach((s,j)=>s.classList.toggle('on',j===k))}
+function cp(b){const t=b.dataset.t;const okf=()=>{b.classList.add('ok');b.innerHTML=ic('check')+' '+esc(T.copied);setTimeout(()=>{b.classList.remove('ok');b.innerHTML=ic('copy')+' '+esc(T.copy)},1800)};
+ const fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');okf()}catch(e){}a.remove()};
+ if(navigator.clipboard&&isSecureContext)navigator.clipboard.writeText(t).then(okf,fb);else fb()}
+const setPill=()=>{const p=$('#sc');if(p)p.textContent=total()+' / '+max;const g=document.querySelector('.prog i');if(g)g.style.width=Math.round(total()/max*100)+'%'};
+function tk(b,id,i){S.tasks[id]=!S.tasks[id];b.classList.toggle('on',!!S.tasks[id]);b.setAttribute('aria-pressed',!!S.tasks[id]);b.querySelector('.bx').innerHTML=S.tasks[id]?ic('check'):'';save();
+ const sc=screens(L[i])[STEP],ok=sc.filter(x=>x.t==='task').every(x=>S.tasks[x.id]);$('#nx').disabled=!ok;$('#need').textContent=ok?'':T.needTasks}
+function ans(b,i,k){const l=L[i],q=l.quiz;if(document.querySelector('.opt.ok'))return;
+ if(k===q.ok){b.classList.add('ok');const s=Math.max(1,3-window.tries);if(S.stars[l.id]==null||S.stars[l.id]<s)S.stars[l.id]=s;save();
+  $('#why').textContent=q.why;$('#nx').disabled=false;$('#need').textContent='';toast(S.stars[l.id],b);setPill()}
+ else{window.tries++;b.classList.add('bad');$('#why').textContent=T.tryAgain;setTimeout(()=>b.classList.remove('bad'),600)}sendH()}
+function next(i){if(i<L.length-1)go(i+1);else final()}
+function final(){if(!L.every((_,i)=>done(i)))return map();
+ app.innerHTML=hero()+`<div style="height:14px"></div><div class="body final"><div class="cup">${ic('trophy')}</div><h2>${esc(T.finalTitle)}</h2><p>${esc(T.finalText.replace('{s}',total()).replace('{m}',max))}</p><div class="blk note info" style="text-align:left"><span class="ni">${ic('pen')}</span><div>${T.homework}</div></div><div class="nav"><button class="btn ghost" onclick="map()">${ic('map')} ${esc(T.map)}</button><button class="btn ghost" onclick="if(confirm('${esc(T.resetQ)}')){S={stars:{},tasks:{},cur:null};save();map()}">${ic('redo')} ${esc(T.reset)}</button></div></div>`;
+ scrollTo(0,0);up();sendH();confetti()}
+function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const c=document.createElement('canvas');c.id='cf';const W=c.width=innerWidth,H=c.height=Math.min(document.body.scrollHeight,900);c.style.height=H+'px';document.body.appendChild(c);const x=c.getContext('2d');
+ const cols=['#E9A824','#3657E8','#0EA5A0','#7B61FF','#E0569B'],P=Array.from({length:120},()=>({x:W/2,y:H*0.3,vx:(Math.random()-.5)*9,vy:-Math.random()*9-3,s:Math.random()*6+4,c:cols[Math.random()*5|0],r:Math.random()*6}));let f=0;
+ (function tick(){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.25;p.x+=p.vx;p.y+=p.vy;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<150)requestAnimationFrame(tick);else c.remove()})()}
+if(S.cur!=null&&open(S.cur))go(S.cur,S.step||0);else map();ready=true;
+</script>
+</body>
+</html>

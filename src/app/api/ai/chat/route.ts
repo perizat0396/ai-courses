@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { aiEnabled, aiLimits, gemini, tutorPrompt, type GeminiMsg } from '@/lib/gemini';
+import { aiStudentEnabled, aiLimits, gemini, tutorPrompt, type GeminiMsg } from '@/lib/gemini';
 import { getLang, pick } from '@/lib/i18n';
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  if (!aiEnabled()) return NextResponse.json({ error: 'ИИ-помощник не настроен / ЖИ-көмекші бапталмаған' }, { status: 503 });
+  if (!aiStudentEnabled()) return NextResponse.json({ error: 'ИИ-помощник не настроен / ЖИ-көмекші бапталмаған' }, { status: 503 });
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });

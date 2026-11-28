@@ -10,7 +10,7 @@ import { Quiz } from '@/components/Quiz';
 import { Assignment } from '@/components/Assignment';
 import { DoneButton } from '@/components/DoneButton';
 import { AiChat } from '@/components/AiChat';
-import { aiEnabled } from '@/lib/gemini';
+import { aiStudentEnabled } from '@/lib/gemini';
 import { IconArrowL, IconArrowR, IconCheck, IconFile } from '@/components/Icons';
 
 function fmtSize(b: number | null) {
@@ -110,7 +110,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
 
           {task && (
             <Assignment lessonId={id} userId={profile.id} task={task}
-              ai={aiEnabled()}
+              ai={aiStudentEnabled()}
               sub={sub ? { body: sub.body, status: sub.status, feedback: sub.feedback, ai_feedback: sub.ai_feedback ?? '', file_url: subFile.url, file_name: subFile.name } : null}
               labels={{
                 assignment: t.assignment, yourAnswer: t.yourAnswer, attach: t.attachFile, send: t.send, sent: t.sent,
@@ -127,7 +127,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
         </div>
       </article>
 
-      {aiEnabled() && (
+      {aiStudentEnabled() && (
         <AiChat lessonId={id} labels={{
           title: t.aiHelper, hello: t.aiHello, placeholder: t.aiPlaceholder, thinking: t.aiThinking,
           note: t.aiNote, quick: task ? [t.aiQuick1, t.aiQuick2, t.aiQuick3] : [t.aiQuick1, t.aiQuick2], send: t.send,

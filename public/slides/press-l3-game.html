@@ -182,7 +182,7 @@ try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=s=>document.querySelector(s), app=$('#app');
 const total=()=>L.reduce((a,l)=>a+(S.stars[l.id]||0),0), max=L.length*3;
-const done=i=>S.stars[L[i].id]!=null, open=i=>i===0||done(i-1);
+const done=i=>!!L[i]&&S.stars[L[i].id]!=null, open=i=>i===0||done(i-1);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let ready=false;const up=()=>{if(!ready)return;try{parent.postMessage({aiGameTop:1},'*')}catch(e){}};
 const sendH=()=>{try{parent.postMessage({aiGameHeight:document.body.scrollHeight},'*')}catch(e){}};
@@ -245,7 +245,7 @@ function final(){if(!L.every((_,i)=>done(i)))return map();
 function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const c=document.createElement('canvas');c.id='cf';const W=c.width=innerWidth,H=c.height=Math.min(document.body.scrollHeight,900);c.style.height=H+'px';document.body.appendChild(c);const x=c.getContext('2d');
  const cols=['#E9A824','#3657E8','#0EA5A0','#7B61FF','#E0569B'],P=Array.from({length:120},()=>({x:W/2,y:H*0.3,vx:(Math.random()-.5)*9,vy:-Math.random()*9-3,s:Math.random()*6+4,c:cols[Math.random()*5|0],r:Math.random()*6}));let f=0;
  (function tick(){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.25;p.x+=p.vx;p.y+=p.vy;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<150)requestAnimationFrame(tick);else c.remove()})()}
-if(S.cur!=null&&open(S.cur))go(S.cur,S.step||0);else map();ready=true;
+if(S.cur!=null&&S.cur>=0&&S.cur<L.length&&open(S.cur))go(S.cur,S.step||0);else map();ready=true;
 </script>
 </body>
 </html>

@@ -520,6 +520,10 @@ def build(tpl_name, data, key, lang, out):
     # новый экран начинается только с заголовка — так картинка, шаги и промт одного шага остаются вместе
     old = html[html.index('function screens(l){'):html.index('let STEP=0;')]
     html = html.replace(old, "function screens(l){const out=[];let cur=null;l.blocks.forEach(b=>{if(!cur||b.t==='h'){cur=[b];out.push(cur)}else cur.push(b)});if(l.quiz)out.push('quiz');return out}\n")
+    # защита: если сохранён номер уровня из старой версии игры — открываем карту, а не пустой экран
+    html = html.replace("const done=i=>S.stars[L[i].id]!=null,", "const done=i=>!!L[i]&&S.stars[L[i].id]!=null,")
+    html = html.replace("if(S.cur!=null&&open(S.cur))go(S.cur,S.step||0);else map();", "if(S.cur!=null&&S.cur>=0&&S.cur<L.length&&open(S.cur))go(S.cur,S.step||0);else map();")
+    assert 'S.cur<L.length' in html and '!!L[i]' in html
     (SL / out).write_text(html)
     n = sum(1 for l in data['levels'] for b in l['blocks'] if b['t'] == 'h')
     print(out, len(data['levels']), 'уровней,', n, 'экранов')

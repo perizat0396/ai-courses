@@ -84,7 +84,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
 
         <div className="mt-8 space-y-8">
           {videoUrl && <Video url={videoUrl} />}
-          {content && <Markdown>{content}</Markdown>}
+          {content && <Markdown lang={lang} stepKey={`${id}:${lang}`}>{content}</Markdown>}
 
           {fileLinks.length > 0 && (
             <div>
